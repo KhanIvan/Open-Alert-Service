@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: open-alert-service
+
+server:
+  port: 8081
+
+---
+spring:
+  profiles: local
+  cloud:
+    config:
+      enabled: false
+
+base-url:
+  open-alert-service: http://localhost:8081
