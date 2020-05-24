@@ -19,35 +19,31 @@ public class LostPersonController {
     private LostPersonService lostPersonService;
 
     @GetMapping
-    @ResponseBody
     public List<LostPerson> findAll() {
         log.debug("Find all lost persons request");
         return lostPersonService.findAll();
     }
 
     @GetMapping("/{id}")
-    @ResponseBody
     public LostPerson findById(@PathVariable(value = "id") UUID id) {
         log.debug("Find a lost person by ID {} request", id);
         return lostPersonService.findById(id);
     }
 
     @PutMapping
-    @ResponseBody
     public LostPerson save(@RequestBody LostPerson lostPerson) {
         log.debug("Save a lost person request");
         return lostPersonService.save(lostPerson);
     }
 
     @DeleteMapping
-    @ResponseBody
-    void deleteAll() {
+    public void deleteAll() {
         log.debug("Delete all lost persons request");
         lostPersonService.deleteAll();
     }
 
     @DeleteMapping("/{id}")
-    void delete(@PathVariable(value = "id") UUID id) {
+    public void delete(@PathVariable(value = "id") UUID id) {
         log.debug("Delete a lost person by ID {}", id);
         lostPersonService.delete(id);
     }
