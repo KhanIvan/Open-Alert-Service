@@ -33,11 +33,11 @@ public class LostPersonService {
 
     @Transactional
     public LostPerson save(LostPerson lostPerson) {
-        updateStats(lostPerson);
+        lostPerson = prepareData(lostPerson);
         return lostPersonRepository.save(lostPerson);
     }
 
-    private void updateStats(LostPerson lostPerson) {
+    private LostPerson prepareData(LostPerson lostPerson) {
         if (Objects.isNull(lostPerson.getId()) || !lostPersonRepository.existsById(lostPerson.getId())) {
             lostPerson.setStatus(LostPersonStatus.builder()
                     .active(true)
@@ -48,9 +48,18 @@ public class LostPersonService {
                     .build());
             lostPerson.setId(UUID.randomUUID());
             lostPerson.setCreatedAt(LocalDateTime.now());
+        } else {
+            lostPerson = updateDescription(lostPerson);
         }
-
         lostPerson.setUpdatedAt(LocalDateTime.now());
+        return lostPerson;
+    }
+
+    private LostPerson updateDescription(LostPerson lostPerson) {
+        LostPerson originalLostPerson = findById(lostPerson.getId());
+        originalLostPerson.setDescription(lostPerson.getDescription());
+        originalLostPerson.setDetails(lostPerson.getDetails());
+        return originalLostPerson;
     }
 
     @Transactional

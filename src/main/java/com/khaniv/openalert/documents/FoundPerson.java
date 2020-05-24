@@ -11,12 +11,13 @@ import java.util.UUID;
 @Data
 @Builder
 @Document
-public class LostPerson {
+public class FoundPerson {
     @Id
     private UUID id;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private FoundPersonStatus status;
     private PersonDescription description;
-    private LostPersonStatus status;
     private String details;
+
 }
