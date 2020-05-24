@@ -1,22 +1,14 @@
 package com.khaniv.openalert.documents;
 
 import lombok.Builder;
-import lombok.Data;
-import org.springframework.data.annotation.Id;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-@Data
+@Getter
+@Setter
 @Builder
 @Document
-public class LostPerson {
-    @Id
-    private UUID id;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private PersonDescription description;
+public class LostPerson extends AbstractPerson {
     private LostPersonStatus status;
-    private String details;
 }
