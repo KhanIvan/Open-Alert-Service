@@ -1,4 +1,4 @@
-package com.khaniv.openalert.documents.enums;
+package com.khaniv.openalert.enums;
 
 import lombok.Getter;
 

@@ -3,6 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
+src/main/java/com/khaniv/openalert/controllers/TestController.java
 
 ### STS ###
 .apt_generated
