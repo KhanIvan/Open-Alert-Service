@@ -15,8 +15,7 @@ import java.util.UUID;
 @RequestMapping("v1/found")
 @Log4j2
 public class FoundPersonController {
-    @Autowired
-    private FoundPersonService foundPersonService;
+    private final FoundPersonService foundPersonService;
 
     @GetMapping
     public List<FoundPerson> findAll() {

@@ -15,8 +15,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Log4j2
 public class LostPersonController {
-    @Autowired
-    private LostPersonService lostPersonService;
+    private final LostPersonService lostPersonService;
 
     @GetMapping
     public List<LostPerson> findAll() {
