@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Document
@@ -27,7 +28,7 @@ public class Person {
     @Indexed
     private Boolean active;
     private SearchStatus status;
-    private List<Match> matches;
+    private Map<UUID, Match> matches;
     private LocalDateTime foundAt;
 
     //description

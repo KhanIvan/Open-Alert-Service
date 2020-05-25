@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +45,7 @@ public class PersonService {
         person.setActive(true);
         person.setCreatedAt(LocalDateTime.now());
         person.setUpdatedAt(LocalDateTime.now());
-        person.setMatches(new ArrayList<>());
+        person.setMatches(new HashMap<>());
         person.setStatus(SearchStatus.LOST);
         return personRepository.save(person);
     }
