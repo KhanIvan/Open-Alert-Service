@@ -18,8 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class LostPersonService {
-    @Autowired
-    private LostPersonRepository lostPersonRepository;
+    private final LostPersonRepository lostPersonRepository;
 
     public List<LostPerson> findAll() {
         return lostPersonRepository.findAll();
@@ -38,21 +37,22 @@ public class LostPersonService {
     }
 
     private LostPerson prepareData(LostPerson lostPerson) {
+        LostPerson ret = lostPerson;
         if (Objects.isNull(lostPerson.getId()) || !lostPersonRepository.existsById(lostPerson.getId())) {
-            lostPerson.setStatus(LostPersonStatus.builder()
+            ret.setStatus(LostPersonStatus.builder()
                     .active(true)
                     .closeMatches(new ArrayList<>())
                     .presumablyFoundIds(new ArrayList<>())
                     .foundIds(new ArrayList<>())
                     .status(SearchStatus.LOST)
                     .build());
-            lostPerson.setId(UUID.randomUUID());
-            lostPerson.setCreatedAt(LocalDateTime.now());
+            ret.setId(UUID.randomUUID());
+            ret.setCreatedAt(LocalDateTime.now());
         } else {
-            lostPerson = updateDescription(lostPerson);
+            ret = updateDescription(lostPerson);
         }
-        lostPerson.setUpdatedAt(LocalDateTime.now());
-        return lostPerson;
+        ret.setUpdatedAt(LocalDateTime.now());
+        return ret;
     }
 
     private LostPerson updateDescription(LostPerson lostPerson) {

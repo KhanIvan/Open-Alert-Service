@@ -18,8 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class FoundPersonService {
-    @Autowired
-    private FoundPersonRepository foundPersonRepository;
+    private final FoundPersonRepository foundPersonRepository;
 
     public List<FoundPerson> findAll() {
         return foundPersonRepository.findAll();
@@ -38,21 +37,22 @@ public class FoundPersonService {
     }
 
     private FoundPerson prepareData(FoundPerson foundPerson) {
+        FoundPerson ret = foundPerson;
         if (Objects.isNull(foundPerson.getId()) || !foundPersonRepository.existsById(foundPerson.getId())) {
-            foundPerson.setStatus(FoundPersonStatus.builder()
+            ret.setStatus(FoundPersonStatus.builder()
                     .active(true)
                     .closeMatches(new ArrayList<>())
                     .presumablyFoundIds(new ArrayList<>())
                     .status(FoundStatus.NO_MATCHES)
                     .build());
-            foundPerson.setCreatedAt(LocalDateTime.now());
-            foundPerson.setId(UUID.randomUUID());
+            ret.setCreatedAt(LocalDateTime.now());
+            ret.setId(UUID.randomUUID());
         } else {
-            foundPerson = updatePersonDescription(foundPerson);
+            ret = updatePersonDescription(foundPerson);
         }
 
-        foundPerson.setUpdatedAt(LocalDateTime.now());
-        return foundPerson;
+        ret.setUpdatedAt(LocalDateTime.now());
+        return ret;
     }
 
     private FoundPerson updatePersonDescription(FoundPerson foundPerson) {

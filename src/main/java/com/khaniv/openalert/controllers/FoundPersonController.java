@@ -1,15 +1,12 @@
 package com.khaniv.openalert.controllers;
 
 import com.khaniv.openalert.documents.FoundPerson;
-import com.khaniv.openalert.documents.PersonDescription;
-import com.khaniv.openalert.documents.enums.PersonSex;
 import com.khaniv.openalert.services.FoundPersonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,8 +15,7 @@ import java.util.UUID;
 @RequestMapping("v1/found")
 @Log4j2
 public class FoundPersonController {
-    @Autowired
-    private FoundPersonService foundPersonService;
+    private final FoundPersonService foundPersonService;
 
     @GetMapping
     public List<FoundPerson> findAll() {
