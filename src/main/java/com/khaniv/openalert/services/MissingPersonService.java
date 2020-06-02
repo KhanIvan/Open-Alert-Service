@@ -53,6 +53,13 @@ public class MissingPersonService {
         return missingPersonRepository.save(missingPerson);
     }
 
+    @Transactional
+    public MissingPerson updateActive(UUID id, boolean active) {
+        MissingPerson missingPerson = findById(id);
+        missingPerson.setActive(active);
+        return missingPersonRepository.save(missingPerson);
+    }
+
     private MissingPerson generateMissingPerson(MissingPerson missingPerson) {
         return MissingPerson.builder()
                 .id(UUID.randomUUID())

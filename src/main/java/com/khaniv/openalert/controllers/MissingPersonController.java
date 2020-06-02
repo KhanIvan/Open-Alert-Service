@@ -20,43 +20,63 @@ public class MissingPersonController {
     @GetMapping("/lost")
     @ResponseBody
     public List<MissingPerson> findLostPersons() {
+        log.info("Find all lost persons");
         return missingPersonService.findByTypeAndActive(MissingPersonType.LOST, true);
     }
 
     @GetMapping("/seen")
     @ResponseBody
     public List<MissingPerson> findSeenPersons() {
+        log.info("Find all seen person");
         return missingPersonService.findByTypeAndActive(MissingPersonType.SEEN, true);
     }
 
     @GetMapping("/{id}")
     @ResponseBody
     public MissingPerson findMissingPerson(@PathVariable(value = "id") UUID id) {
+        log.info("Find lost person by ID: {}", id);
         return missingPersonService.findById(id);
     }
 
     @PostMapping
     @ResponseBody
     public MissingPerson save(@RequestBody MissingPerson missingPerson) {
+        log.info("Save missing person");
         return missingPersonService.save(missingPerson);
     }
 
     @PutMapping("/description")
     @ResponseBody
     public MissingPerson updateDescription(@RequestBody MissingPerson source) {
+        log.info("Update description of a missing person by ID {}", source.getId());
         return missingPersonService.updateDescription(source);
     }
 
     @PutMapping("/status")
     @ResponseBody
     public MissingPerson updateStatus(@RequestBody MissingPerson source) {
+        log.info("Update status of a missing person by ID: {}", source.getId());
         return missingPersonService.updateStatus(source);
     }
 
     @DeleteMapping("/{id}")
     @ResponseBody
     public void delete(@PathVariable(value = "id") UUID id) {
+        log.info("Delete a missing person by ID {}", id);
         missingPersonService.delete(id);
     }
 
+    @PutMapping("/inactivate/{id}")
+    @ResponseBody
+    public MissingPerson inactivate(@PathVariable(value = "id") UUID id) {
+        log.info("Inactivate a missing person by ID: {}", id);
+        return missingPersonService.updateActive(id, false);
+    }
+
+    @PutMapping("/activate/{id}")
+    @ResponseBody
+    public MissingPerson activate(@PathVariable(value = "id") UUID id) {
+        log.info("Activate a missing person by ID: {}", id);
+        return missingPersonService.updateActive(id, true);
+    }
 }
