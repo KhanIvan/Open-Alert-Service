@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,7 +41,6 @@ public class MissingPersonService {
     public MissingPerson updateDescription(MissingPerson source) {
         MissingPerson missingPerson = findById(source.getId());
         missingPerson.setDescription(source.getDescription());
-        missingPerson.setUpdatedAt(ZonedDateTime.now());
         return missingPersonRepository.save(missingPerson);
     }
 
@@ -65,8 +63,6 @@ public class MissingPersonService {
                 .id(UUID.randomUUID())
                 .active(true)
                 .description(missingPerson.getDescription())
-                .createdAt(ZonedDateTime.now())
-                .updatedAt(ZonedDateTime.now())
                 .type(missingPerson.getType())
                 .status(generateMissingPersonStatus(missingPerson))
                 .build();

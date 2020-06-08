@@ -2,10 +2,7 @@ package com.khaniv.openalert.documents;
 
 import com.khaniv.openalert.documents.enums.OperatorMatchStatus;
 import com.khaniv.openalert.documents.enums.UserMatchStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,20 +14,20 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Match {
+@Builder
+public class Match extends BaseDocument {
     @Id
     private UUID id;
-
     @Indexed
     private UUID lostPersonId;
-
     @Indexed
-    private UUID detectedPersonId;
+    private UUID seenPersonId;
+
+    private Boolean active;
 
     private OperatorMatchStatus operatorMatchStatus;
     private UserMatchStatus userMatchStatus;
-    private Boolean active;
 
-    private Boolean seenByUser;
-    private Boolean seenByOperator;
+    private Boolean viewedByUser;
+    private Boolean viewedByOperator;
 }
