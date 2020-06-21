@@ -58,6 +58,10 @@ public class MissingPersonService {
         return missingPersonRepository.save(missingPerson);
     }
 
+    public boolean existsById(UUID id) {
+        return missingPersonRepository.existsById(id);
+    }
+
     private MissingPerson generateMissingPerson(MissingPerson missingPerson) {
         return MissingPerson.builder()
                 .id(UUID.randomUUID())
@@ -70,7 +74,6 @@ public class MissingPersonService {
 
     private MissingPersonStatus generateMissingPersonStatus(MissingPerson missingPerson) {
         return MissingPersonStatus.builder()
-                .disappearanceDetails(missingPerson.getStatus().getDisappearanceDetails())
                 .lostAt(missingPerson.getStatus().getLostAt())
                 .status(SearchStatus.LOST)
                 .build();

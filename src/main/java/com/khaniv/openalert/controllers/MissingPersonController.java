@@ -3,6 +3,7 @@ package com.khaniv.openalert.controllers;
 import com.khaniv.openalert.documents.MissingPerson;
 import com.khaniv.openalert.documents.enums.MissingPersonType;
 import com.khaniv.openalert.services.MissingPersonService;
+import com.sun.istack.internal.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("v1/person")
 @Log4j2
+@SuppressWarnings("unused")
 public class MissingPersonController {
     private final MissingPersonService missingPersonService;
 
@@ -40,21 +42,21 @@ public class MissingPersonController {
 
     @PostMapping
     @ResponseBody
-    public MissingPerson save(@RequestBody MissingPerson missingPerson) {
+    public MissingPerson save(@RequestBody @NotNull MissingPerson missingPerson) {
         log.info("Save missing person");
         return missingPersonService.save(missingPerson);
     }
 
     @PutMapping("/description")
     @ResponseBody
-    public MissingPerson updateDescription(@RequestBody MissingPerson source) {
+    public MissingPerson updateDescription(@RequestBody @NotNull MissingPerson source) {
         log.info("Update description of a missing person by ID {}", source.getId());
         return missingPersonService.updateDescription(source);
     }
 
     @PutMapping("/status")
     @ResponseBody
-    public MissingPerson updateStatus(@RequestBody MissingPerson source) {
+    public MissingPerson updateStatus(@RequestBody @NotNull MissingPerson source) {
         log.info("Update status of a missing person by ID: {}", source.getId());
         return missingPersonService.updateStatus(source);
     }

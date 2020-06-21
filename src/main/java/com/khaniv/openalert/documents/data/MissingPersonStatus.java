@@ -12,7 +12,6 @@ import java.time.ZonedDateTime;
 @Builder
 public class MissingPersonStatus {
     private SearchStatus status;
-    private String disappearanceDetails;
     private ZonedDateTime lostAt;
     private ZonedDateTime foundAt;
 }

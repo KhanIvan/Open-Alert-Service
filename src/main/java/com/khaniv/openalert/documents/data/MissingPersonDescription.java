@@ -20,4 +20,5 @@ public class MissingPersonDescription {
     private String hairColor;
     private String eyesColor;
     private String distinctiveFeatures;
+    private String otherDetails;
 }

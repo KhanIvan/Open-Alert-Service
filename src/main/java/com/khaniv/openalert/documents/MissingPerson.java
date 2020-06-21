@@ -3,6 +3,7 @@ package com.khaniv.openalert.documents;
 import com.khaniv.openalert.documents.data.MissingPersonDescription;
 import com.khaniv.openalert.documents.data.MissingPersonStatus;
 import com.khaniv.openalert.documents.enums.MissingPersonType;
+import com.sun.istack.internal.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -24,6 +25,7 @@ public class MissingPerson extends BaseDocument {
     @Indexed
     private Boolean active;
 
+    @NotNull
     private MissingPersonStatus status;
     private MissingPersonDescription description;
 }
