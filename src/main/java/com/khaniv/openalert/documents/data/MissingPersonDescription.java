@@ -1,6 +1,6 @@
-package com.khaniv.openalert.data;
+package com.khaniv.openalert.documents.data;
 
-import com.khaniv.openalert.enums.PersonSex;
+import com.khaniv.openalert.documents.enums.PersonSex;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class PersonDescription {
+public class MissingPersonDescription {
     private String name;
     private PersonSex sex;
     private LocalDateTime birthDate;
@@ -20,4 +20,5 @@ public class PersonDescription {
     private String hairColor;
     private String eyesColor;
     private String distinctiveFeatures;
+    private String otherDetails;
 }

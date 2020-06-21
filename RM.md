@@ -14,20 +14,20 @@ lost people come back home.
 
 * Information spreading. All of us have seen posters with missing persons on the walls and poles. You may not believe 
 it, but people working in this sphere say that these posters are one of the most efficient ways to actually find
-missing person. Thousands of common people on the alert are still more efficient than modern technologies and
+missing missingPerson. Thousands of common people on the alert are still more efficient than modern technologies and
 a few of specialists. Via using Open Alert with some sort of web-interface or mobile app we can make information 
 spreading even faster!
 
 * Photo face recognition. It is planned to implement face recognition in Open Alert project. Common users can make
-photos of persons who seem to be in trouble and in case of any close match to real missing person
-the information will be sent to the operators immediately. Medicine workers can make a photo of unidentified person 
+photos of persons who seem to be in trouble and in case of any close match to real missing missingPerson
+the information will be sent to the operators immediately. Medicine workers can make a photo of unidentified missingPerson 
 without having to file tons of forms and papers. Just snap a photo like in any social network, and you may save 
 someone's life!
 
 * Geo-tags. Some people, especially the ones with Alzheimer's or some other mental decease, can go to other cities
 where they used to live decades ago. Searching for them there can be tricky - even spreading information in social 
 networks or messengers may not be quick and convenient enough. In Open Alert we will implement geo-tags features. 
-The operator will simply fill in several locations where the person could go to, and the next moment people in these
+The operator will simply fill in several locations where the missingPerson could go to, and the next moment people in these
 locations will receive a notification and will be on alert!
 
 #Technologies used
