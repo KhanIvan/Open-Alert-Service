@@ -23,7 +23,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MatchServiceTest {
@@ -209,6 +209,12 @@ public class MatchServiceTest {
         List<Match> matches = matchService.updateAllViewedByOperator(Collections.singletonList(UUID.randomUUID()));
         assertSingletonListOfMatches(matches);
         Assert.assertTrue(matches.get(0).getViewedByOperator());
+    }
+
+    @Test
+    public void testDelete() {
+        matchService.delete(UUID.randomUUID());
+        verify(matchRepository, times(1)).deleteById(Mockito.any(UUID.class));
     }
 
     private void mockUpdateMethods() {
