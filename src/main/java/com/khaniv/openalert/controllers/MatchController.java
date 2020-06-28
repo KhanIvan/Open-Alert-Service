@@ -142,7 +142,7 @@ public class MatchController {
     @ResponseBody
     public List<Match> viewedByOperator(@RequestBody @NotNull List<UUID> ids) {
         log.info("Matches viewed by operator by IDs: {}", getIdsString(ids));
-        return matchService.updateAllViewedByUser(ids);
+        return matchService.updateAllViewedByOperator(ids);
     }
 
     private String getMatchesString(List<Match> matches) {

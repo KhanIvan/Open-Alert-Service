@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class MatchService {
     private final MatchRepository matchRepository;
     private final MissingPersonService missingPersonService;
-    private final static int MAX_COUNT = 100000;
+    public final static int MAX_COUNT = 100000;
     private final static String MAX_COUNT_ERROR = "Matches count is too big! Maximum count allowed: " + MAX_COUNT;
 
     public Match findById(UUID id) {
