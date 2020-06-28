@@ -1,11 +1,9 @@
-package com.khaniv.openalert.unit.service;
+package com.khaniv.openalert.unit;
 
 import com.khaniv.openalert.documents.MissingPerson;
-import com.khaniv.openalert.documents.data.MissingPersonDescription;
-import com.khaniv.openalert.documents.data.MissingPersonStatus;
 import com.khaniv.openalert.documents.enums.MissingPersonType;
-import com.khaniv.openalert.documents.enums.PersonSex;
 import com.khaniv.openalert.documents.enums.SearchStatus;
+import com.khaniv.openalert.generators.MissingPersonGenerator;
 import com.khaniv.openalert.repositories.MissingPersonRepository;
 import com.khaniv.openalert.services.MissingPersonService;
 import org.junit.Assert;
@@ -18,14 +16,18 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
+
+/**
+ * Unit test for {@link MissingPersonService}
+ *
+ * @author Ivan Khan
+ */
 
 @RunWith(MockitoJUnitRunner.class)
 public class MissingPersonServiceTest {
@@ -64,7 +66,7 @@ public class MissingPersonServiceTest {
         when(missingPersonRepository.save(Mockito.any(MissingPerson.class)))
                 .thenAnswer(AdditionalAnswers.returnsFirstArg());
 
-        MissingPerson missingPerson = generateMissingPerson();
+        MissingPerson missingPerson = MissingPersonGenerator.generateNewMissingPerson();
         MissingPerson savedPerson = missingPersonService.save(missingPerson);
         assertMissingPerson(savedPerson);
         Assert.assertEquals(missingPerson.getType(), savedPerson.getType());
@@ -77,7 +79,7 @@ public class MissingPersonServiceTest {
     @Test
     public void testUpdateDescription() {
         mockUpdateMethods();
-        MissingPerson missingPerson = generateUpdatedMissingPerson();
+        MissingPerson missingPerson = MissingPersonGenerator.generateUpdatedMissingPerson();
         MissingPerson modifiedMissingPerson = missingPersonService.updateDescription(missingPerson);
         assertMissingPerson(modifiedMissingPerson);
         Assert.assertEquals(missingPerson.getDescription(), modifiedMissingPerson.getDescription());
@@ -88,7 +90,7 @@ public class MissingPersonServiceTest {
     @Test
     public void testUpdateStatus() {
         mockUpdateMethods();
-        MissingPerson missingPerson = generateUpdatedMissingPerson();
+        MissingPerson missingPerson = MissingPersonGenerator.generateUpdatedMissingPerson();
         MissingPerson modifiedMissingPerson = missingPersonService.updateStatus(missingPerson);
         assertMissingPerson(modifiedMissingPerson);
         Assert.assertNotEquals(missingPerson.getDescription(), modifiedMissingPerson.getDescription());
@@ -121,7 +123,7 @@ public class MissingPersonServiceTest {
 
     private void mockUpdateMethods() {
         when(missingPersonRepository.findById(Mockito.any(UUID.class)))
-                .thenReturn(Optional.of(generateMissingPerson()));
+                .thenReturn(Optional.of(MissingPersonGenerator.generateMissingPerson()));
 
         when(missingPersonRepository.save(Mockito.any(MissingPerson.class)))
                 .thenAnswer(AdditionalAnswers.returnsFirstArg());
@@ -147,83 +149,6 @@ public class MissingPersonServiceTest {
         Assert.assertNotNull(missingPerson.getDescription().getSkinColor());
         Assert.assertNotNull(missingPerson.getDescription().getOtherDetails());
     }
-
-    private MissingPerson generateNewMissingPerson() {
-        return MissingPerson.builder()
-                .description(MissingPersonDescription.builder()
-                        .birthDate(LocalDateTime.of(1992, 7, 18, 0, 0))
-                        .citizenship("Russia")
-                        .distinctiveFeatures("Dragon tattoo on left shoulder")
-                        .eyesColor("Brown")
-                        .hairColor("Ginger")
-                        .height(180)
-                        .name("Alexandr Romanenkov")
-                        .nationality("Russian")
-                        .sex(PersonSex.MALE)
-                        .skinColor("White")
-                        .weight(78)
-                        .otherDetails("Went out to buy cigarettes and never returned")
-                        .build())
-                .type(MissingPersonType.LOST)
-                .status(MissingPersonStatus.builder()
-                        .lostAt(ZonedDateTime.now())
-                        .build())
-                .build();
-    }
-
-    private MissingPerson generateMissingPerson() {
-        return MissingPerson.builder()
-                .id(UUID.randomUUID())
-                .active(true)
-                .description(MissingPersonDescription.builder()
-                        .birthDate(LocalDateTime.of(1992, 7, 18, 0, 0))
-                        .citizenship("UK")
-                        .distinctiveFeatures("Dragon tattoo on left shoulder")
-                        .eyesColor("Green")
-                        .hairColor("Brown")
-                        .height(180)
-                        .name("John Doe")
-                        .nationality("Irish")
-                        .sex(PersonSex.MALE)
-                        .skinColor("White")
-                        .weight(78)
-                        .otherDetails("Went out to buy cigarettes and never returned")
-                        .build())
-                .type(MissingPersonType.LOST)
-                .status(MissingPersonStatus.builder()
-                        .lostAt(ZonedDateTime.now())
-                        .status(SearchStatus.LOST)
-                        .build())
-                .build();
-    }
-
-    private MissingPerson generateUpdatedMissingPerson() {
-        return MissingPerson.builder()
-                .id(UUID.randomUUID())
-                .active(true)
-                .description(MissingPersonDescription.builder()
-                        .birthDate(LocalDateTime.of(1993, 1, 23, 0, 0))
-                        .citizenship("Australia")
-                        .distinctiveFeatures("None")
-                        .eyesColor("Blue")
-                        .hairColor("Brown")
-                        .height(173)
-                        .name("Jane Doe")
-                        .nationality("Australian")
-                        .sex(PersonSex.FEMALE)
-                        .skinColor("Black")
-                        .weight(65)
-                        .otherDetails("Lost on the way to the job")
-                        .build())
-                .type(MissingPersonType.SEEN)
-                .status(MissingPersonStatus.builder()
-                        .lostAt(ZonedDateTime.now())
-                        .status(SearchStatus.FOUND)
-                        .foundAt(ZonedDateTime.now())
-                        .build())
-                .build();
-    }
-
 
     @Test(expected = IllegalArgumentException.class)
     public void personShouldNotExits() {

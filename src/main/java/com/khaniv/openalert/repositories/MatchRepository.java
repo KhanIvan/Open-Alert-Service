@@ -15,9 +15,6 @@ public interface MatchRepository extends MongoRepository<Match, UUID> {
     @Query("{'lostPersonId': ?0, 'seenPersonId': ?1}")
     Optional<Match> findByLostPersonIdAndSeenPersonId(UUID lostPersonId, UUID seenPersonId);
 
-    @Query("{'lostPersonId': ?0, 'seenPersonId': ?1}")
-    boolean existsByLostPersonIdAndSeenPersonId(UUID lostPersonId, UUID seenPersonId);
-
     @Query("{'lostPersonId': ?0}")
     List<Match> findByLostPersonId(UUID lostPersonId);
 

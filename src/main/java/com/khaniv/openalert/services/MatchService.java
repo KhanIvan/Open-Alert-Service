@@ -174,7 +174,7 @@ public class MatchService {
             throw new IllegalArgumentException("No persons with IDs: " + ids.stream()
                     .map(UUID::toString).collect(Collectors.joining(", ")) + " found!");
 
-        if (matchRepository.existsByLostPersonIdAndSeenPersonId(match.getLostPersonId(), match.getSeenPersonId()))
+        if (matchRepository.findByLostPersonIdAndSeenPersonId(match.getLostPersonId(), match.getSeenPersonId()).isPresent())
             throw new IllegalArgumentException("Match between lost person" + match.getLostPersonId() +
                     " and seen person " + match.getSeenPersonId() + " already exists!");
     }
