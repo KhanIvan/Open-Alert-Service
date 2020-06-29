@@ -4,6 +4,7 @@ import com.khaniv.openalert.documents.MissingPerson;
 import com.khaniv.openalert.documents.data.MissingPersonStatus;
 import com.khaniv.openalert.documents.enums.MissingPersonType;
 import com.khaniv.openalert.documents.enums.SearchStatus;
+import com.khaniv.openalert.errors.DocumentNotFoundException;
 import com.khaniv.openalert.repositories.MissingPersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class MissingPersonService {
 
     public MissingPerson findById(UUID id) {
         return missingPersonRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("No person with ID " + id + " found!")
+                () -> new DocumentNotFoundException(MissingPerson.class, id)
         );
     }
 
