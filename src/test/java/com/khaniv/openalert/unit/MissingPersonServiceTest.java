@@ -3,6 +3,7 @@ package com.khaniv.openalert.unit;
 import com.khaniv.openalert.documents.MissingPerson;
 import com.khaniv.openalert.documents.enums.MissingPersonType;
 import com.khaniv.openalert.documents.enums.SearchStatus;
+import com.khaniv.openalert.errors.DocumentNotFoundException;
 import com.khaniv.openalert.generators.MissingPersonGenerator;
 import com.khaniv.openalert.repositories.MissingPersonRepository;
 import com.khaniv.openalert.services.MissingPersonService;
@@ -73,7 +74,6 @@ public class MissingPersonServiceTest {
         Assert.assertEquals(missingPerson.getDescription(), savedPerson.getDescription());
         Assert.assertEquals(missingPerson.getStatus().getLostAt(), savedPerson.getStatus().getLostAt());
         Assert.assertEquals(SearchStatus.LOST, savedPerson.getStatus().getStatus());
-        Assert.assertTrue(savedPerson.getActive());
     }
 
     @Test
@@ -115,6 +115,14 @@ public class MissingPersonServiceTest {
     }
 
     @Test
+    public void testExistsByIdAndType() {
+        when(missingPersonRepository.findByIdAndType(Mockito.any(UUID.class), Mockito.any(MissingPersonType.class)))
+                .thenReturn(Optional.of(new MissingPerson()));
+
+        Assert.assertTrue(missingPersonService.existsByIdAndType(UUID.randomUUID(), MissingPersonType.SEEN));
+    }
+
+    @Test
     public void testDelete() {
         missingPersonService.delete(UUID.randomUUID());
         verify(missingPersonRepository, times(1)).deleteById(Mockito.any(UUID.class));
@@ -131,11 +139,9 @@ public class MissingPersonServiceTest {
 
     private void assertMissingPerson(MissingPerson missingPerson) {
         Assert.assertNotNull(missingPerson);
-        Assert.assertNotNull(missingPerson.getId());
         Assert.assertNotNull(missingPerson.getDescription());
         Assert.assertNotNull(missingPerson.getStatus());
         Assert.assertNotNull(missingPerson.getType());
-        Assert.assertNotNull(missingPerson.getActive());
         Assert.assertNotNull(missingPerson.getStatus().getLostAt());
         Assert.assertNotNull(missingPerson.getStatus().getStatus());
         Assert.assertNotNull(missingPerson.getDescription().getBirthDate());
@@ -150,7 +156,7 @@ public class MissingPersonServiceTest {
         Assert.assertNotNull(missingPerson.getDescription().getOtherDetails());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = DocumentNotFoundException.class)
     public void personShouldNotExits() {
         when(missingPersonRepository.findById(Mockito.any(UUID.class)))
                 .thenReturn(Optional.empty());
