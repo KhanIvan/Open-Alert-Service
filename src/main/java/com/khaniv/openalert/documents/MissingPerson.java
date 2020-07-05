@@ -6,6 +6,7 @@ import com.khaniv.openalert.documents.enums.MissingPersonType;
 import com.sun.istack.internal.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
@@ -23,7 +24,8 @@ public class MissingPerson extends BaseDocument {
     @Indexed
     private MissingPersonType type;
 
-    @NotNull
+    @NonNull
     private MissingPersonStatus status;
+    @NonNull
     private MissingPersonDescription description;
 }

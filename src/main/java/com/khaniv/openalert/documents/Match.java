@@ -5,6 +5,7 @@ import com.khaniv.openalert.documents.enums.UserMatchStatus;
 import com.sun.istack.internal.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
@@ -20,12 +21,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Match extends BaseDocument {
     @Indexed
-    @NotNull
+    @NonNull
     private UUID lostPersonId;
     @Indexed
-    @NotNull
+    @NonNull
     private UUID seenPersonId;
-
+    @NonNull
     private double probability;
     private OperatorMatchStatus operatorMatchStatus;
     private UserMatchStatus userMatchStatus;
