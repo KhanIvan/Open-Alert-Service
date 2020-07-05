@@ -1,8 +1,14 @@
 package com.khaniv.openalert.unit;
 
+import com.khaniv.openalert.checkers.CheckingUtils;
 import com.khaniv.openalert.documents.Match;
+import com.khaniv.openalert.documents.MissingPerson;
+import com.khaniv.openalert.documents.enums.MissingPersonType;
 import com.khaniv.openalert.documents.enums.OperatorMatchStatus;
 import com.khaniv.openalert.documents.enums.UserMatchStatus;
+import com.khaniv.openalert.errors.DocumentNotFoundException;
+import com.khaniv.openalert.errors.MatchAlreadyExistsException;
+import com.khaniv.openalert.errors.MaxCountExcessException;
 import com.khaniv.openalert.generators.MatchGenerator;
 import com.khaniv.openalert.repositories.MatchRepository;
 import com.khaniv.openalert.services.MatchService;
@@ -58,6 +64,9 @@ public class MatchServiceTest {
         when(matchRepository.save(Mockito.any(Match.class))).
                 thenAnswer(AdditionalAnswers.returnsFirstArg());
 
+        when(missingPersonService.existsByIdAndType(Mockito.any(UUID.class), Mockito.any(MissingPersonType.class)))
+                .thenReturn(true);
+
         Match match = MatchGenerator.generateNewMatch();
         Match savedMatch = matchService.save(match);
         assertSavedMatch(match, savedMatch);
@@ -71,10 +80,13 @@ public class MatchServiceTest {
         when(missingPersonService.existsById(Mockito.any(UUID.class)))
                 .thenReturn(true);
 
+        when(missingPersonService.existsByIdAndType(Mockito.any(UUID.class), Mockito.any(MissingPersonType.class)))
+                .thenReturn(true);
+
         when(matchRepository.saveAll(Mockito.anyCollection())).
                 thenAnswer(AdditionalAnswers.returnsFirstArg());
 
-        List<Match> matches = Stream.generate(MatchGenerator::generateNewMatch).limit(MatchService.MAX_COUNT).collect(Collectors.toList());
+        List<Match> matches = Stream.generate(MatchGenerator::generateNewMatch).limit(CheckingUtils.MAX_COUNT).collect(Collectors.toList());
         List<Match> savedMatches = matchService.saveAll(matches);
         Assert.assertNotNull(savedMatches);
         Assert.assertEquals(matches.size(), savedMatches.size());
@@ -242,12 +254,10 @@ public class MatchServiceTest {
 
     private void assertMatch(Match match) {
         Assert.assertNotNull(match);
-        Assert.assertNotNull(match.getId());
         Assert.assertNotNull(match.getLostPersonId());
         Assert.assertNotNull(match.getSeenPersonId());
         Assert.assertNotNull(match.getOperatorMatchStatus());
         Assert.assertNotNull(match.getUserMatchStatus());
-        Assert.assertNotNull(match.getActive());
         Assert.assertNotNull(match.getViewedByOperator());
         Assert.assertNotNull(match.getViewedByUser());
     }
@@ -256,7 +266,6 @@ public class MatchServiceTest {
         assertMatch(savedMatch);
         Assert.assertEquals(matchToSave.getSeenPersonId(), savedMatch.getSeenPersonId());
         Assert.assertEquals(matchToSave.getLostPersonId(), savedMatch.getLostPersonId());
-        Assert.assertEquals(true, savedMatch.getActive());
         Assert.assertEquals(false, savedMatch.getViewedByOperator());
         Assert.assertEquals(false, savedMatch.getViewedByUser());
         Assert.assertEquals(UserMatchStatus.NOT_CONFIRMED, savedMatch.getUserMatchStatus());
@@ -270,7 +279,7 @@ public class MatchServiceTest {
     }
 
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = DocumentNotFoundException.class)
     public void personShouldNotBeFound() {
         when(missingPersonService.existsById(Mockito.any(UUID.class)))
                 .thenReturn(false);
@@ -283,12 +292,15 @@ public class MatchServiceTest {
         matchService.save(match);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MatchAlreadyExistsException.class)
     public void matchShouldAlreadyExist() {
         when(matchRepository.findByLostPersonIdAndSeenPersonId(Mockito.any(UUID.class), Mockito.any(UUID.class)))
                 .thenReturn(Optional.of(new Match()));
 
         when(missingPersonService.existsById(Mockito.any(UUID.class)))
+                .thenReturn(true);
+
+        when(missingPersonService.existsByIdAndType(Mockito.any(UUID.class), Mockito.any(MissingPersonType.class)))
                 .thenReturn(true);
 
         Match match = Match.builder()
@@ -299,9 +311,25 @@ public class MatchServiceTest {
         matchService.save(match);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MaxCountExcessException.class)
     public void matchesSizeShouldBeTooBig() {
-        List<Match> matches = Stream.generate(Match::new).limit(MatchService.MAX_COUNT + 1).collect(Collectors.toList());
+        List<Match> matches = Stream.generate(Match::new).limit(CheckingUtils.MAX_COUNT + 1).collect(Collectors.toList());
         matchService.findAll(matches);
+    }
+
+    @Test(expected = DocumentNotFoundException.class)
+    public void personShouldNotExistByIdAndType() {
+        when(missingPersonService.existsById(Mockito.any(UUID.class)))
+                .thenReturn(true);
+
+        when(missingPersonService.existsByIdAndType(Mockito.any(UUID.class), Mockito.any(MissingPersonType.class)))
+                .thenReturn(false);
+
+        Match match = Match.builder()
+                .lostPersonId(UUID.randomUUID())
+                .seenPersonId(UUID.randomUUID())
+                .build();
+
+        matchService.save(match);
     }
 }

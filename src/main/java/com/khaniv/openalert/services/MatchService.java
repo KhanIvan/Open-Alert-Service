@@ -1,8 +1,10 @@
 package com.khaniv.openalert.services;
 
 import com.google.common.collect.Lists;
+import com.khaniv.openalert.checkers.CheckingUtils;
 import com.khaniv.openalert.documents.Match;
 import com.khaniv.openalert.documents.MissingPerson;
+import com.khaniv.openalert.documents.enums.MissingPersonType;
 import com.khaniv.openalert.documents.enums.OperatorMatchStatus;
 import com.khaniv.openalert.documents.enums.UserMatchStatus;
 import com.khaniv.openalert.errors.DocumentNotFoundException;
@@ -12,10 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,8 +22,6 @@ import java.util.stream.Collectors;
 public class MatchService {
     private final MatchRepository matchRepository;
     private final MissingPersonService missingPersonService;
-    public final static int MAX_COUNT = 100000;
-    private final static String MAX_COUNT_ERROR = "Matches count is too big! Maximum count allowed: " + MAX_COUNT;
 
     public Match findById(UUID id) {
         return matchRepository.findById(id).orElseThrow(() -> new DocumentNotFoundException(Match.class, id));
@@ -138,8 +135,7 @@ public class MatchService {
     }
 
     public List<Match> findAllByIds(List<UUID> ids) {
-        if (ids.size() > MAX_COUNT)
-            throw new IllegalArgumentException(MAX_COUNT_ERROR);
+        CheckingUtils.checkMaxSize(ids, Match.class);
 
         return Lists.newArrayList(matchRepository.findAllById(ids));
     }
@@ -153,8 +149,6 @@ public class MatchService {
 
     private Match generateMatch(Match match) {
         return Match.builder()
-                .id(UUID.randomUUID())
-                .active(true)
                 .lostPersonId(match.getLostPersonId())
                 .seenPersonId(match.getSeenPersonId())
                 .viewedByOperator(false)
@@ -165,6 +159,12 @@ public class MatchService {
     }
 
     private void checkMatch(Match match) {
+        checkMatchPeopleExist(match);
+        checkMatchPeopleExistByIdAndType(match);
+        checkMatchNotExistsAlready(match);
+    }
+
+    private void checkMatchPeopleExist(Match match) {
         Set<UUID> ids = new HashSet<>();
         if (!missingPersonService.existsById(match.getSeenPersonId()))
             ids.add(match.getSeenPersonId());
@@ -174,13 +174,28 @@ public class MatchService {
 
         if (!ids.isEmpty())
             throw new DocumentNotFoundException(MissingPerson.class, ids);
+    }
 
+    private void checkMatchPeopleExistByIdAndType(Match match) {
+        List<String> messages = new ArrayList<>();
+
+        if (!missingPersonService.existsByIdAndType(match.getLostPersonId(), MissingPersonType.LOST))
+            messages.add("Lost person not found by ID " + match.getLostPersonId() + "!");
+
+        if (!missingPersonService.existsByIdAndType(match.getSeenPersonId(), MissingPersonType.SEEN))
+            messages.add("Seen person not found by ID " + match.getSeenPersonId() + "!");
+
+        if (!messages.isEmpty()) {
+            throw new DocumentNotFoundException(String.join("\r\n", messages));
+        }
+    }
+
+    private void checkMatchNotExistsAlready(Match match) {
         if (matchRepository.findByLostPersonIdAndSeenPersonId(match.getLostPersonId(), match.getSeenPersonId()).isPresent())
             throw new MatchAlreadyExistsException(match.getLostPersonId(), match.getSeenPersonId());
     }
 
     private void checkMatchesCount(List<Match> matches) {
-        if (matches.size() > MAX_COUNT)
-            throw new IllegalArgumentException(MAX_COUNT_ERROR);
+        CheckingUtils.checkMaxSize(matches, Match.class);
     }
 }

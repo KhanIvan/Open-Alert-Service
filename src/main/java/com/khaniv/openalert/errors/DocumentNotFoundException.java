@@ -17,4 +17,8 @@ public class DocumentNotFoundException extends IllegalArgumentException {
     public DocumentNotFoundException(Class<? extends BaseDocument> documentClass, Collection<UUID> id) {
         super(MessageFormat.format(COLLECTION_MESSAGE, documentClass.getSimpleName(), id));
     }
+
+    public DocumentNotFoundException(String message) {
+        super(message);
+    }
 }

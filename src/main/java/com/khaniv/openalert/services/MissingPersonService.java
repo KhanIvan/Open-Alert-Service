@@ -63,10 +63,12 @@ public class MissingPersonService {
         return missingPersonRepository.existsById(id);
     }
 
+    public boolean existsByIdAndType(UUID id, MissingPersonType type) {
+        return missingPersonRepository.findByIdAndType(id, type).isPresent();
+    }
+
     private MissingPerson generateMissingPerson(MissingPerson missingPerson) {
         return MissingPerson.builder()
-                .id(UUID.randomUUID())
-                .active(true)
                 .description(missingPerson.getDescription())
                 .type(missingPerson.getType())
                 .status(generateMissingPersonStatus(missingPerson))
