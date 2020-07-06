@@ -1,15 +1,14 @@
-package com.khaniv.openalert.unit;
+package com.khaniv.openalert.tests.unit;
 
 import com.khaniv.openalert.checkers.CheckingUtils;
 import com.khaniv.openalert.documents.Match;
-import com.khaniv.openalert.documents.MissingPerson;
 import com.khaniv.openalert.documents.enums.MissingPersonType;
 import com.khaniv.openalert.documents.enums.OperatorMatchStatus;
 import com.khaniv.openalert.documents.enums.UserMatchStatus;
 import com.khaniv.openalert.errors.DocumentNotFoundException;
 import com.khaniv.openalert.errors.MatchAlreadyExistsException;
 import com.khaniv.openalert.errors.MaxCountExcessException;
-import com.khaniv.openalert.generators.MatchGenerator;
+import com.khaniv.openalert.helpers.generators.MatchGenerator;
 import com.khaniv.openalert.repositories.MatchRepository;
 import com.khaniv.openalert.services.MatchService;
 import com.khaniv.openalert.services.MissingPersonService;

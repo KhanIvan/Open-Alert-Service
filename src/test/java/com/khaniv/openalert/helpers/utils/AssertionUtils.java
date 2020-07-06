@@ -1,4 +1,4 @@
-package com.khaniv.openalert.utils;
+package com.khaniv.openalert.helpers.utils;
 
 import com.khaniv.openalert.documents.BaseDocument;
 import lombok.experimental.UtilityClass;

@@ -1,12 +1,12 @@
-package com.khaniv.openalert.integration;
+package com.khaniv.openalert.tests.integration;
 
 import com.khaniv.openalert.configurations.MongoConfiguration;
 import com.khaniv.openalert.documents.MissingPerson;
 import com.khaniv.openalert.documents.enums.MissingPersonType;
-import com.khaniv.openalert.generators.MissingPersonGenerator;
+import com.khaniv.openalert.helpers.generators.MissingPersonGenerator;
 import com.khaniv.openalert.listeners.BaseDocumentEventListener;
 import com.khaniv.openalert.repositories.MissingPersonRepository;
-import com.khaniv.openalert.utils.AssertionUtils;
+import com.khaniv.openalert.helpers.utils.AssertionUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
