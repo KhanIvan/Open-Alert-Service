@@ -2,14 +2,12 @@ package com.khaniv.openalert.documents.data;
 
 import com.khaniv.openalert.documents.enums.SearchStatus;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NonNull;
-import lombok.Setter;
 
 import java.time.ZonedDateTime;
 
-@Getter
-@Setter
+@Data
 @Builder
 public class MissingPersonStatus {
     private SearchStatus status;

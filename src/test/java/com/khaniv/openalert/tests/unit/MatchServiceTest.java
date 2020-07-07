@@ -5,9 +5,10 @@ import com.khaniv.openalert.documents.Match;
 import com.khaniv.openalert.documents.enums.MissingPersonType;
 import com.khaniv.openalert.documents.enums.OperatorMatchStatus;
 import com.khaniv.openalert.documents.enums.UserMatchStatus;
-import com.khaniv.openalert.errors.DocumentNotFoundException;
-import com.khaniv.openalert.errors.MatchAlreadyExistsException;
-import com.khaniv.openalert.errors.MaxCountExcessException;
+import com.khaniv.openalert.errors.exceptions.DocumentDuplicatesException;
+import com.khaniv.openalert.errors.exceptions.DocumentNotFoundException;
+import com.khaniv.openalert.errors.exceptions.MatchAlreadyExistsException;
+import com.khaniv.openalert.errors.exceptions.MaxCountExcessException;
 import com.khaniv.openalert.helpers.generators.MatchGenerator;
 import com.khaniv.openalert.repositories.MatchRepository;
 import com.khaniv.openalert.services.MatchService;
@@ -22,10 +23,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -85,7 +83,7 @@ public class MatchServiceTest {
         when(matchRepository.saveAll(Mockito.anyCollection())).
                 thenAnswer(AdditionalAnswers.returnsFirstArg());
 
-        List<Match> matches = Stream.generate(MatchGenerator::generateNewMatch).limit(CheckingUtils.MAX_COUNT).collect(Collectors.toList());
+        List<Match> matches = Arrays.asList(MatchGenerator.generateNewMatch(), MatchGenerator.generateNewMatch());
         List<Match> savedMatches = matchService.saveAll(matches);
         Assert.assertNotNull(savedMatches);
         Assert.assertEquals(matches.size(), savedMatches.size());
@@ -283,11 +281,7 @@ public class MatchServiceTest {
         when(missingPersonService.existsById(Mockito.any(UUID.class)))
                 .thenReturn(false);
 
-        Match match = Match.builder()
-                .lostPersonId(UUID.randomUUID())
-                .seenPersonId(UUID.randomUUID())
-                .build();
-
+        Match match = MatchGenerator.generateNewMatch();
         matchService.save(match);
     }
 
@@ -302,11 +296,7 @@ public class MatchServiceTest {
         when(missingPersonService.existsByIdAndType(Mockito.any(UUID.class), Mockito.any(MissingPersonType.class)))
                 .thenReturn(true);
 
-        Match match = Match.builder()
-                .lostPersonId(UUID.randomUUID())
-                .seenPersonId(UUID.randomUUID())
-                .build();
-
+        Match match = MatchGenerator.generateNewMatch();
         matchService.save(match);
     }
 
@@ -324,11 +314,36 @@ public class MatchServiceTest {
         when(missingPersonService.existsByIdAndType(Mockito.any(UUID.class), Mockito.any(MissingPersonType.class)))
                 .thenReturn(false);
 
-        Match match = Match.builder()
-                .lostPersonId(UUID.randomUUID())
-                .seenPersonId(UUID.randomUUID())
-                .build();
-
+        Match match = MatchGenerator.generateNewMatch();
         matchService.save(match);
+    }
+
+    @Test(expected = DocumentDuplicatesException.class)
+    public void matchesShouldBeDuplicates() {
+        when(matchRepository.findByLostPersonIdAndSeenPersonId(Mockito.any(UUID.class), Mockito.any(UUID.class)))
+                .thenReturn(Optional.empty());
+
+        when(missingPersonService.existsById(Mockito.any(UUID.class)))
+                .thenReturn(true);
+
+        when(missingPersonService.existsByIdAndType(Mockito.any(UUID.class), Mockito.any(MissingPersonType.class)))
+                .thenReturn(true);
+
+        UUID lostPersonId = UUID.randomUUID();
+        UUID seenPersonId = UUID.randomUUID();
+        List<Match> matches = Arrays.asList(
+                Match.builder()
+                        .probability(0.0)
+                        .seenPersonId(seenPersonId)
+                        .lostPersonId(lostPersonId)
+                        .build(),
+                Match.builder()
+                        .probability(0.5)
+                        .seenPersonId(seenPersonId)
+                        .lostPersonId(lostPersonId)
+                        .build()
+        );
+
+        matchService.saveAll(matches);
     }
 }
