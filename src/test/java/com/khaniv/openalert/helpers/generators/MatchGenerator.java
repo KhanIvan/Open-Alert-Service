@@ -1,4 +1,4 @@
-package com.khaniv.openalert.generators;
+package com.khaniv.openalert.helpers.generators;
 
 import com.khaniv.openalert.documents.Match;
 import com.khaniv.openalert.documents.enums.OperatorMatchStatus;

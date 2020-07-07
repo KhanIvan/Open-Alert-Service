@@ -1,7 +1,7 @@
 package com.khaniv.openalert.checkers;
 
 import com.khaniv.openalert.documents.BaseDocument;
-import com.khaniv.openalert.errors.MaxCountExcessException;
+import com.khaniv.openalert.errors.exceptions.MaxCountExcessException;
 import lombok.experimental.UtilityClass;
 
 import java.util.Collection;

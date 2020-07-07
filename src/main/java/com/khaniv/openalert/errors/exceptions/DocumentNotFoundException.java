@@ -1,4 +1,4 @@
-package com.khaniv.openalert.errors;
+package com.khaniv.openalert.errors.exceptions;
 
 import com.khaniv.openalert.documents.BaseDocument;
 
