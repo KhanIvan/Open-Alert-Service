@@ -1,10 +1,10 @@
-package com.khaniv.openalert.unit;
+package com.khaniv.openalert.tests.unit;
 
 import com.khaniv.openalert.documents.MissingPerson;
 import com.khaniv.openalert.documents.enums.MissingPersonType;
 import com.khaniv.openalert.documents.enums.SearchStatus;
-import com.khaniv.openalert.errors.DocumentNotFoundException;
-import com.khaniv.openalert.generators.MissingPersonGenerator;
+import com.khaniv.openalert.errors.exceptions.DocumentNotFoundException;
+import com.khaniv.openalert.helpers.generators.MissingPersonGenerator;
 import com.khaniv.openalert.repositories.MissingPersonRepository;
 import com.khaniv.openalert.services.MissingPersonService;
 import org.junit.Assert;

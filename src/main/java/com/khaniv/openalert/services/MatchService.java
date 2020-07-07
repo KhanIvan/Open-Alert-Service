@@ -7,8 +7,9 @@ import com.khaniv.openalert.documents.MissingPerson;
 import com.khaniv.openalert.documents.enums.MissingPersonType;
 import com.khaniv.openalert.documents.enums.OperatorMatchStatus;
 import com.khaniv.openalert.documents.enums.UserMatchStatus;
-import com.khaniv.openalert.errors.DocumentNotFoundException;
-import com.khaniv.openalert.errors.MatchAlreadyExistsException;
+import com.khaniv.openalert.errors.exceptions.DocumentDuplicatesException;
+import com.khaniv.openalert.errors.exceptions.DocumentNotFoundException;
+import com.khaniv.openalert.errors.exceptions.MatchAlreadyExistsException;
 import com.khaniv.openalert.repositories.MatchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,12 +45,9 @@ public class MatchService {
 
     @Transactional
     public List<Match> saveAll(List<Match> matches) {
-        checkMatchesCount(matches);
+        checkNewMatches(matches);
         List<Match> newMatches = matches.stream()
-                .map(m -> {
-                    checkMatch(m);
-                    return generateMatch(m);
-                }).collect(Collectors.toList());
+                .map(this::generateMatch).collect(Collectors.toList());
         return matchRepository.saveAll(newMatches);
     }
 
@@ -151,6 +149,7 @@ public class MatchService {
         return Match.builder()
                 .lostPersonId(match.getLostPersonId())
                 .seenPersonId(match.getSeenPersonId())
+                .probability(match.getProbability())
                 .viewedByOperator(false)
                 .viewedByUser(false)
                 .operatorMatchStatus(OperatorMatchStatus.ACTIVE)
@@ -193,6 +192,22 @@ public class MatchService {
     private void checkMatchNotExistsAlready(Match match) {
         if (matchRepository.findByLostPersonIdAndSeenPersonId(match.getLostPersonId(), match.getSeenPersonId()).isPresent())
             throw new MatchAlreadyExistsException(match.getLostPersonId(), match.getSeenPersonId());
+    }
+
+    private void checkNewMatches(List<Match> matches) {
+        checkMatchesCount(matches);
+        matches.forEach(this::checkMatch);
+        long uniqueMatchesCount = matches.stream()
+                .map(m -> Match.builder()
+                        .lostPersonId(m.getLostPersonId())
+                        .seenPersonId(m.getSeenPersonId())
+                        .probability(0.0)
+                        .build())
+                .distinct()
+                .count();
+
+        if (uniqueMatchesCount != matches.size())
+            throw new DocumentDuplicatesException(Match.class);
     }
 
     private void checkMatchesCount(List<Match> matches) {
