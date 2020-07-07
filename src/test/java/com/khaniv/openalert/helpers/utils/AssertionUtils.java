@@ -26,19 +26,19 @@ public class AssertionUtils {
     public void assertBaseDocument(BaseDocument baseDocument) {
         Assert.assertNotNull(baseDocument);
         Assert.assertNotNull(baseDocument.getCreatedAt());
-        Assert.assertNotNull(baseDocument.getUpdatedAt());
+        Assert.assertNotNull(baseDocument.getLastModifiedAt());
         Assert.assertNotNull(baseDocument.getId());
         Assert.assertNotNull(baseDocument.getActive());
     }
 
     public void assertNewBaseDocument(BaseDocument baseDocument) {
         assertBaseDocument(baseDocument);
-        Assert.assertEquals(baseDocument.getUpdatedAt(), baseDocument.getCreatedAt());
+        Assert.assertEquals(baseDocument.getLastModifiedAt(), baseDocument.getCreatedAt());
         Assert.assertTrue(baseDocument.getActive());
     }
 
     public void assertUpdatedBaseDocument(BaseDocument baseDocument) {
         assertBaseDocument(baseDocument);
-        Assert.assertNotEquals(baseDocument.getUpdatedAt(), baseDocument.getCreatedAt());
+        Assert.assertNotEquals(baseDocument.getLastModifiedAt(), baseDocument.getCreatedAt());
     }
 }

@@ -18,5 +18,5 @@ public class BaseDocument {
     private UUID id;
     private Boolean active;
     private ZonedDateTime createdAt;
-    private ZonedDateTime updatedAt;
+    private ZonedDateTime lastModifiedAt;
 }

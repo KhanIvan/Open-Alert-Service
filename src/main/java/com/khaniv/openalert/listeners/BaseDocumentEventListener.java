@@ -19,7 +19,7 @@ public class BaseDocumentEventListener extends AbstractMongoEventListener<BaseDo
             event.getSource().setActive(true);
         }
 
-        event.getSource().setUpdatedAt(now);
+        event.getSource().setLastModifiedAt(now);
 
         super.onBeforeConvert(event);
     }
