@@ -7,6 +7,3 @@ spring:
       database: alert
       port: 27017
       host: localhost
-
-server:
-  port: 8081
