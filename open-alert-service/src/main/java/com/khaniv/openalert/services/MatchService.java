@@ -1,17 +1,20 @@
 package com.khaniv.openalert.services;
 
 import com.google.common.collect.Lists;
+import com.khaniv.openalert.MatchDto;
 import com.khaniv.openalert.checkers.CheckingUtils;
 import com.khaniv.openalert.documents.Match;
 import com.khaniv.openalert.documents.MissingPerson;
-import com.khaniv.openalert.documents.enums.MissingPersonType;
-import com.khaniv.openalert.documents.enums.OperatorMatchStatus;
-import com.khaniv.openalert.documents.enums.UserMatchStatus;
+import com.khaniv.openalert.enums.MissingPersonType;
+import com.khaniv.openalert.enums.OperatorMatchStatus;
+import com.khaniv.openalert.enums.UserMatchStatus;
 import com.khaniv.openalert.errors.exceptions.DocumentDuplicatesException;
 import com.khaniv.openalert.errors.exceptions.DocumentNotFoundException;
 import com.khaniv.openalert.errors.exceptions.MatchAlreadyExistsException;
+import com.khaniv.openalert.mappers.MatchMapper;
 import com.khaniv.openalert.repositories.MatchRepository;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,32 +26,35 @@ import java.util.stream.Collectors;
 public class MatchService {
     private final MatchRepository matchRepository;
     private final MissingPersonService missingPersonService;
+    private final MatchMapper matchMapper = Mappers.getMapper(MatchMapper.class);
 
-    public Match findById(UUID id) {
-        return matchRepository.findById(id).orElseThrow(() -> new DocumentNotFoundException(Match.class, id));
+    public MatchDto findById(UUID id) {
+        return matchMapper.toDto(
+                matchRepository.findById(id).orElseThrow(() -> new DocumentNotFoundException(Match.class, id))
+        );
     }
 
-    public List<Match> findByLostPersonId(UUID lostPersonId) {
-        return matchRepository.findByLostPersonId(lostPersonId);
+    public List<MatchDto> findByLostPersonId(UUID lostPersonId) {
+        return matchMapper.toDto(matchRepository.findByLostPersonId(lostPersonId));
     }
 
-    public List<Match> findBySeenPersonId(UUID seenPersonId) {
-        return matchRepository.findBySeenPersonId(seenPersonId);
+    public List<MatchDto> findBySeenPersonId(UUID seenPersonId) {
+        return matchMapper.toDto(matchRepository.findBySeenPersonId(seenPersonId));
     }
 
     @Transactional
-    public Match save(Match match) {
+    public MatchDto save(MatchDto match) {
         checkMatch(match);
-        Match newMatch = generateMatch(match);
-        return matchRepository.save(newMatch);
+        MatchDto newMatch = generateMatch(match);
+        return matchMapper.toDto(matchRepository.save(matchMapper.toDocument(newMatch)));
     }
 
     @Transactional
-    public List<Match> saveAll(List<Match> matches) {
+    public List<MatchDto> saveAll(List<MatchDto> matches) {
         checkNewMatches(matches);
-        List<Match> newMatches = matches.stream()
+        List<MatchDto> newMatches = matches.stream()
                 .map(this::generateMatch).collect(Collectors.toList());
-        return matchRepository.saveAll(newMatches);
+        return matchMapper.toDto(matchRepository.saveAll(matchMapper.toDocument(newMatches)));
     }
 
     @Transactional
@@ -57,96 +63,49 @@ public class MatchService {
     }
 
     @Transactional
-    public Match updateOperatorStatus(Match match) {
-        Match originalMatch = findById(match.getId());
+    public MatchDto updateOperatorStatus(MatchDto match) {
+        MatchDto originalMatch = findById(match.getId());
         originalMatch.setOperatorMatchStatus(match.getOperatorMatchStatus());
-        return matchRepository.save(originalMatch);
+        return matchMapper.toDto(matchRepository.save(matchMapper.toDocument(originalMatch)));
     }
 
     @Transactional
-    public Match updateUserStatus(Match match) {
-        Match originalMatch = findById(match.getId());
+    public MatchDto updateUserStatus(MatchDto match) {
+        MatchDto originalMatch = findById(match.getId());
         originalMatch.setUserMatchStatus(match.getUserMatchStatus());
-        return matchRepository.save(originalMatch);
+        return matchMapper.toDto(matchRepository.save(matchMapper.toDocument(originalMatch)));
     }
 
     @Transactional
-    public Match updateActive(UUID id, boolean active) {
-        Match originalMatch = findById(id);
+    public MatchDto updateActive(UUID id, boolean active) {
+        MatchDto originalMatch = findById(id);
         originalMatch.setActive(active);
-        return matchRepository.save(originalMatch);
+        return matchMapper.toDto(matchRepository.save(matchMapper.toDocument(originalMatch)));
     }
 
     @Transactional
-    public Match viewedByUser(UUID id) {
-        Match match = findById(id);
+    public MatchDto viewedByUser(UUID id) {
+        MatchDto match = findById(id);
         match.setViewedByUser(true);
-        return matchRepository.save(match);
+        return matchMapper.toDto(matchRepository.save(matchMapper.toDocument(match)));
     }
 
     @Transactional
-    public Match viewedByOperator(UUID id) {
-        Match match = findById(id);
+    public MatchDto viewedByOperator(UUID id) {
+        MatchDto match = findById(id);
         match.setViewedByOperator(true);
-        return matchRepository.save(match);
+        return matchMapper.toDto(matchRepository.save(matchMapper.toDocument(match)));
     }
 
-    @Transactional
-    public List<Match> updateAllOperatorStatuses(List<Match> matches) {
-        List<Match> modifiedMatches = findAll(matches);
-        modifiedMatches.forEach(match -> match.setOperatorMatchStatus(matches.stream()
-                .filter(m -> m.getId().equals(match.getId()))
-                .findAny().get().getOperatorMatchStatus()));
-
-        return matchRepository.saveAll(modifiedMatches);
-    }
-
-    @Transactional
-    public List<Match> updateAllUserStatuses(List<Match> matches) {
-        List<Match> modifiedMatches = findAll(matches);
-        modifiedMatches.forEach(match -> match.setUserMatchStatus(matches.stream()
-                .filter(m -> m.getId().equals(match.getId()))
-                .findAny().get().getUserMatchStatus()));
-
-        return matchRepository.saveAll(modifiedMatches);
-    }
-
-    @Transactional
-    public List<Match> updateAllActive(List<UUID> ids, boolean active) {
-        List<Match> matches = findAllByIds(ids);
-        matches.forEach(match -> match.setActive(active));
-        return matchRepository.saveAll(matches);
-    }
-
-    @Transactional
-    public List<Match> updateAllViewedByUser(List<UUID> ids) {
-        List<Match> matches = findAllByIds(ids);
-        matches.forEach(match -> match.setViewedByUser(true));
-        return matchRepository.saveAll(matches);
-    }
-
-    @Transactional
-    public List<Match> updateAllViewedByOperator(List<UUID> ids) {
-        List<Match> matches = findAllByIds(ids);
-        matches.forEach(match -> match.setViewedByOperator(true));
-        return matchRepository.saveAll(matches);
-    }
-
-    public List<Match> findAllByIds(List<UUID> ids) {
-        CheckingUtils.checkMaxSize(ids, Match.class);
-
-        return Lists.newArrayList(matchRepository.findAllById(ids));
-    }
-
-    public List<Match> findAll(List<Match> matches) {
+    public List<MatchDto> findAll(List<MatchDto> matches) {
         checkMatchesCount(matches);
-        return Lists.newArrayList(matchRepository.findAllById(matches.stream()
-                .map(Match::getId)
-                .collect(Collectors.toList())));
+        return matchMapper.toDto(Lists.newArrayList(matchRepository.findAllById(matches.stream()
+                .map(MatchDto::getId)
+                .collect(Collectors.toList()))));
     }
 
-    private Match generateMatch(Match match) {
-        return Match.builder()
+    private MatchDto generateMatch(MatchDto match) {
+        return MatchDto.builder()
                 .lostPersonId(match.getLostPersonId())
                 .seenPersonId(match.getSeenPersonId())
                 .probability(match.getProbability())
@@ -157,13 +116,13 @@ public class MatchService {
                 .build();
     }
 
-    private void checkMatch(Match match) {
+    private void checkMatch(MatchDto match) {
         checkMatchPeopleExist(match);
         checkMatchPeopleExistByIdAndType(match);
         checkMatchNotExistsAlready(match);
     }
 
-    private void checkMatchPeopleExist(Match match) {
+    private void checkMatchPeopleExist(MatchDto match) {
         Set<UUID> ids = new HashSet<>();
         if (!missingPersonService.existsById(match.getSeenPersonId()))
             ids.add(match.getSeenPersonId());
@@ -175,7 +134,7 @@ public class MatchService {
             throw new DocumentNotFoundException(MissingPerson.class, ids);
     }
 
-    private void checkMatchPeopleExistByIdAndType(Match match) {
+    private void checkMatchPeopleExistByIdAndType(MatchDto match) {
         List<String> messages = new ArrayList<>();
 
         if (!missingPersonService.existsByIdAndType(match.getLostPersonId(), MissingPersonType.LOST))
@@ -189,12 +148,12 @@ public class MatchService {
         }
     }
 
-    private void checkMatchNotExistsAlready(Match match) {
+    private void checkMatchNotExistsAlready(MatchDto match) {
         if (matchRepository.findByLostPersonIdAndSeenPersonId(match.getLostPersonId(), match.getSeenPersonId()).isPresent())
             throw new MatchAlreadyExistsException(match.getLostPersonId(), match.getSeenPersonId());
     }
 
-    private void checkNewMatches(List<Match> matches) {
+    private void checkNewMatches(List<MatchDto> matches) {
         checkMatchesCount(matches);
         matches.forEach(this::checkMatch);
         long uniqueMatchesCount = matches.stream()
@@ -210,7 +169,7 @@ public class MatchService {
             throw new DocumentDuplicatesException(Match.class);
     }
 
-    private void checkMatchesCount(List<Match> matches) {
-        CheckingUtils.checkMaxSize(matches, Match.class);
+    private void checkMatchesCount(List<MatchDto> matches) {
+        CheckingUtils.checkMaxSize(matchMapper.toDocument(matches), Match.class);
     }
 }

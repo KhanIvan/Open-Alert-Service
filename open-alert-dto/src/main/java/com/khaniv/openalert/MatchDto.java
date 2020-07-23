@@ -1,4 +1,4 @@
-package com.khaniv.openalert.documents;
+package com.khaniv.openalert;
 
 import com.khaniv.openalert.enums.OperatorMatchStatus;
 import com.khaniv.openalert.enums.UserMatchStatus;
@@ -7,21 +7,16 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Document
-@SuperBuilder
 @NoArgsConstructor
-public class Match extends BaseDocument {
-    @Indexed
+@SuperBuilder
+public class MatchDto extends BaseDto {
     @NonNull
     private UUID lostPersonId;
-    @Indexed
     @NonNull
     private UUID seenPersonId;
     @NonNull

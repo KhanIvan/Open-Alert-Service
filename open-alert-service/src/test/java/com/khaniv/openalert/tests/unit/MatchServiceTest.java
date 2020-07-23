@@ -1,15 +1,17 @@
 package com.khaniv.openalert.tests.unit;
 
+import com.khaniv.openalert.MatchDto;
 import com.khaniv.openalert.checkers.CheckingUtils;
 import com.khaniv.openalert.documents.Match;
-import com.khaniv.openalert.documents.enums.MissingPersonType;
-import com.khaniv.openalert.documents.enums.OperatorMatchStatus;
-import com.khaniv.openalert.documents.enums.UserMatchStatus;
+import com.khaniv.openalert.enums.MissingPersonType;
+import com.khaniv.openalert.enums.OperatorMatchStatus;
+import com.khaniv.openalert.enums.UserMatchStatus;
 import com.khaniv.openalert.errors.exceptions.DocumentDuplicatesException;
 import com.khaniv.openalert.errors.exceptions.DocumentNotFoundException;
 import com.khaniv.openalert.errors.exceptions.MatchAlreadyExistsException;
 import com.khaniv.openalert.errors.exceptions.MaxCountExcessException;
 import com.khaniv.openalert.helpers.generators.MatchGenerator;
+import com.khaniv.openalert.mappers.MatchMapper;
 import com.khaniv.openalert.repositories.MatchRepository;
 import com.khaniv.openalert.services.MatchService;
 import com.khaniv.openalert.services.MissingPersonService;
@@ -17,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -24,8 +27,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
@@ -38,6 +39,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class MatchServiceTest {
     private MatchService matchService;
+    private final MatchMapper matchMapper = Mappers.getMapper(MatchMapper.class);
 
     @Mock
     MissingPersonService missingPersonService;
@@ -64,8 +66,8 @@ public class MatchServiceTest {
         when(missingPersonService.existsByIdAndType(Mockito.any(UUID.class), Mockito.any(MissingPersonType.class)))
                 .thenReturn(true);
 
-        Match match = MatchGenerator.generateNewMatch();
-        Match savedMatch = matchService.save(match);
+        MatchDto match = matchMapper.toDto(MatchGenerator.generateNewMatch());
+        MatchDto savedMatch = matchService.save(match);
         assertSavedMatch(match, savedMatch);
     }
 
@@ -83,8 +85,8 @@ public class MatchServiceTest {
         when(matchRepository.saveAll(Mockito.anyCollection())).
                 thenAnswer(AdditionalAnswers.returnsFirstArg());
 
-        List<Match> matches = Arrays.asList(MatchGenerator.generateNewMatch(), MatchGenerator.generateNewMatch());
-        List<Match> savedMatches = matchService.saveAll(matches);
+        List<MatchDto> matches = matchMapper.toDto(Arrays.asList(MatchGenerator.generateNewMatch(), MatchGenerator.generateNewMatch()));
+        List<MatchDto> savedMatches = matchService.saveAll(matches);
         Assert.assertNotNull(savedMatches);
         Assert.assertEquals(matches.size(), savedMatches.size());
         assertSavedMatch(matches.get(0), savedMatches.get(0));
@@ -95,16 +97,16 @@ public class MatchServiceTest {
         when(matchRepository.findById(Mockito.any(UUID.class)))
                 .thenReturn(Optional.of(MatchGenerator.generateMatch()));
 
-        Match match = matchService.findById(UUID.randomUUID());
+        MatchDto match = matchService.findById(UUID.randomUUID());
         assertMatch(match);
     }
 
     @Test
     public void testFindByLostPersonId() {
-        when(matchService.findByLostPersonId(Mockito.any(UUID.class)))
+        when(matchRepository.findByLostPersonId(Mockito.any(UUID.class)))
                 .thenReturn(Collections.singletonList(MatchGenerator.generateMatch()));
 
-        List<Match> matches = matchService.findByLostPersonId(UUID.randomUUID());
+        List<MatchDto> matches = matchService.findByLostPersonId(UUID.randomUUID());
         Assert.assertNotNull(matches);
         Assert.assertEquals(1, matches.size());
         assertMatch(matches.get(0));
@@ -112,10 +114,10 @@ public class MatchServiceTest {
 
     @Test
     public void testFindBySeenPersonId() {
-        when(matchService.findBySeenPersonId(Mockito.any(UUID.class)))
+        when(matchRepository.findBySeenPersonId(Mockito.any(UUID.class)))
                 .thenReturn(Collections.singletonList(MatchGenerator.generateMatch()));
 
-        List<Match> matches = matchService.findBySeenPersonId(UUID.randomUUID());
+        List<MatchDto> matches = matchService.findBySeenPersonId(UUID.randomUUID());
         Assert.assertNotNull(matches);
         Assert.assertEquals(1, matches.size());
         assertMatch(matches.get(0));
@@ -124,8 +126,8 @@ public class MatchServiceTest {
     @Test
     public void testUpdateOperatorStatus() {
         mockUpdateMethods();
-        Match match = MatchGenerator.generateModifiedStatusesMatch();
-        Match modifiedMatch = matchService.updateOperatorStatus(match);
+        MatchDto match = matchMapper.toDto(MatchGenerator.generateModifiedStatusesMatch());
+        MatchDto modifiedMatch = matchService.updateOperatorStatus(match);
         assertMatch(modifiedMatch);
         Assert.assertEquals(match.getOperatorMatchStatus(), modifiedMatch.getOperatorMatchStatus());
         Assert.assertNotEquals(match.getUserMatchStatus(), modifiedMatch.getUserMatchStatus());
@@ -134,8 +136,8 @@ public class MatchServiceTest {
     @Test
     public void testUpdateUserStatus() {
         mockUpdateMethods();
-        Match match = MatchGenerator.generateModifiedStatusesMatch();
-        Match modifiedMatch = matchService.updateUserStatus(match);
+        MatchDto match = matchMapper.toDto(MatchGenerator.generateModifiedStatusesMatch());
+        MatchDto modifiedMatch = matchService.updateUserStatus(match);
         assertMatch(modifiedMatch);
         Assert.assertNotEquals(match.getOperatorMatchStatus(), modifiedMatch.getOperatorMatchStatus());
         Assert.assertEquals(match.getUserMatchStatus(), modifiedMatch.getUserMatchStatus());
@@ -144,7 +146,7 @@ public class MatchServiceTest {
     @Test
     public void testUpdateActive() {
         mockUpdateMethods();
-        Match modifiedMatch = matchService.updateActive(UUID.randomUUID(), false);
+        MatchDto modifiedMatch = matchService.updateActive(UUID.randomUUID(), false);
         assertMatch(modifiedMatch);
         Assert.assertFalse(modifiedMatch.getActive());
     }
@@ -152,7 +154,7 @@ public class MatchServiceTest {
     @Test
     public void testUpdateViewedByUser() {
         mockUpdateMethods();
-        Match modifiedMatch = matchService.viewedByUser(UUID.randomUUID());
+        MatchDto modifiedMatch = matchService.viewedByUser(UUID.randomUUID());
         assertMatch(modifiedMatch);
         Assert.assertTrue(modifiedMatch.getViewedByUser());
     }
@@ -160,71 +162,9 @@ public class MatchServiceTest {
     @Test
     public void testUpdateViewedByOperator() {
         mockUpdateMethods();
-        Match modifiedMatch = matchService.viewedByOperator(UUID.randomUUID());
+        MatchDto modifiedMatch = matchService.viewedByOperator(UUID.randomUUID());
         assertMatch(modifiedMatch);
         Assert.assertTrue(modifiedMatch.getViewedByOperator());
-    }
-
-    @Test
-    public void testUpdateAllOperatorStatuses() {
-        Match match = MatchGenerator.generateMatch();
-
-        when(matchRepository.findAllById(Mockito.anyCollection()))
-                .thenReturn(Collections.singletonList(match));
-
-        when(matchRepository.saveAll(Mockito.anyCollection()))
-                .thenAnswer(AdditionalAnswers.returnsFirstArg());
-
-        Match matchToUpdate = MatchGenerator.generateModifiedStatusesMatch();
-        matchToUpdate.setId(match.getId());
-        List<Match> matches = Collections.singletonList(matchToUpdate);
-        List<Match> modifiedMatches = matchService.updateAllOperatorStatuses(matches);
-        assertSingletonListOfMatches(modifiedMatches);
-        Assert.assertEquals(matches.get(0).getOperatorMatchStatus(), modifiedMatches.get(0).getOperatorMatchStatus());
-        Assert.assertNotEquals(matches.get(0).getUserMatchStatus(), modifiedMatches.get(0).getUserMatchStatus());
-    }
-
-    @Test
-    public void testUpdateAllUserStatuses() {
-        Match match = MatchGenerator.generateMatch();
-
-        when(matchRepository.findAllById(Mockito.anyCollection()))
-                .thenReturn(Collections.singletonList(match));
-
-        when(matchRepository.saveAll(Mockito.anyCollection()))
-                .thenAnswer(AdditionalAnswers.returnsFirstArg());
-
-        Match matchToUpdate = MatchGenerator.generateModifiedStatusesMatch();
-        matchToUpdate.setId(match.getId());
-        List<Match> matches = Collections.singletonList(matchToUpdate);
-        List<Match> modifiedMatches = matchService.updateAllUserStatuses(matches);
-        assertSingletonListOfMatches(modifiedMatches);
-        Assert.assertNotEquals(matches.get(0).getOperatorMatchStatus(), modifiedMatches.get(0).getOperatorMatchStatus());
-        Assert.assertEquals(matches.get(0).getUserMatchStatus(), modifiedMatches.get(0).getUserMatchStatus());
-    }
-
-    @Test
-    public void testUpdateAllActive() {
-        mockUpdateAllMethods();
-        List<Match> matches = matchService.updateAllActive(Collections.singletonList(UUID.randomUUID()), false);
-        assertSingletonListOfMatches(matches);
-        Assert.assertFalse(matches.get(0).getActive());
-    }
-
-    @Test
-    public void testUpdateAllViewedByUser() {
-        mockUpdateAllMethods();
-        List<Match> matches = matchService.updateAllViewedByUser(Collections.singletonList(UUID.randomUUID()));
-        assertSingletonListOfMatches(matches);
-        Assert.assertTrue(matches.get(0).getViewedByUser());
-    }
-
-    @Test
-    public void testUpdateAllViewedByOperator() {
-        mockUpdateAllMethods();
-        List<Match> matches = matchService.updateAllViewedByOperator(Collections.singletonList(UUID.randomUUID()));
-        assertSingletonListOfMatches(matches);
-        Assert.assertTrue(matches.get(0).getViewedByOperator());
     }
 
     @Test
@@ -249,7 +189,7 @@ public class MatchServiceTest {
                 .thenAnswer(AdditionalAnswers.returnsFirstArg());
     }
 
-    private void assertMatch(Match match) {
+    private void assertMatch(MatchDto match) {
         Assert.assertNotNull(match);
         Assert.assertNotNull(match.getLostPersonId());
         Assert.assertNotNull(match.getSeenPersonId());
@@ -259,7 +199,7 @@ public class MatchServiceTest {
         Assert.assertNotNull(match.getViewedByUser());
     }
 
-    private void assertSavedMatch(Match matchToSave, Match savedMatch) {
+    private void assertSavedMatch(MatchDto matchToSave, MatchDto savedMatch) {
         assertMatch(savedMatch);
         Assert.assertEquals(matchToSave.getSeenPersonId(), savedMatch.getSeenPersonId());
         Assert.assertEquals(matchToSave.getLostPersonId(), savedMatch.getLostPersonId());
@@ -269,7 +209,7 @@ public class MatchServiceTest {
         Assert.assertEquals(OperatorMatchStatus.ACTIVE, savedMatch.getOperatorMatchStatus());
     }
 
-    private void assertSingletonListOfMatches(List<Match> matches) {
+    private void assertSingletonListOfMatches(List<MatchDto> matches) {
         Assert.assertNotNull(matches);
         Assert.assertEquals(1, matches.size());
         assertMatch(matches.get(0));
@@ -281,7 +221,7 @@ public class MatchServiceTest {
         when(missingPersonService.existsById(Mockito.any(UUID.class)))
                 .thenReturn(false);
 
-        Match match = MatchGenerator.generateNewMatch();
+        MatchDto match = matchMapper.toDto(MatchGenerator.generateNewMatch());
         matchService.save(match);
     }
 
@@ -296,13 +236,13 @@ public class MatchServiceTest {
         when(missingPersonService.existsByIdAndType(Mockito.any(UUID.class), Mockito.any(MissingPersonType.class)))
                 .thenReturn(true);
 
-        Match match = MatchGenerator.generateNewMatch();
+        MatchDto match = matchMapper.toDto(MatchGenerator.generateNewMatch());
         matchService.save(match);
     }
 
     @Test(expected = MaxCountExcessException.class)
     public void matchesSizeShouldBeTooBig() {
-        List<Match> matches = Stream.generate(Match::new).limit(CheckingUtils.MAX_COUNT + 1).collect(Collectors.toList());
+        List<MatchDto> matches = Collections.nCopies(CheckingUtils.MAX_COUNT + 1, matchMapper.toDto(MatchGenerator.generateMatch()));
         matchService.findAll(matches);
     }
 
@@ -315,7 +255,7 @@ public class MatchServiceTest {
                 .thenReturn(false);
 
         Match match = MatchGenerator.generateNewMatch();
-        matchService.save(match);
+        matchService.save(matchMapper.toDto(match));
     }
 
     @Test(expected = DocumentDuplicatesException.class)
@@ -344,6 +284,6 @@ public class MatchServiceTest {
                         .build()
         );
 
-        matchService.saveAll(matches);
+        matchService.saveAll(matchMapper.toDto(matches));
     }
 }

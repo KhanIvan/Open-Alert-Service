@@ -1,12 +1,15 @@
 package com.khaniv.openalert.services;
 
+import com.khaniv.openalert.MissingPersonDto;
+import com.khaniv.openalert.data.MissingPersonStatus;
 import com.khaniv.openalert.documents.MissingPerson;
-import com.khaniv.openalert.documents.data.MissingPersonStatus;
-import com.khaniv.openalert.documents.enums.MissingPersonType;
-import com.khaniv.openalert.documents.enums.SearchStatus;
+import com.khaniv.openalert.enums.MissingPersonType;
+import com.khaniv.openalert.enums.SearchStatus;
 import com.khaniv.openalert.errors.exceptions.DocumentNotFoundException;
+import com.khaniv.openalert.mappers.MissingPersonMapper;
 import com.khaniv.openalert.repositories.MissingPersonRepository;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,20 +20,21 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MissingPersonService {
     private final MissingPersonRepository missingPersonRepository;
+    private final MissingPersonMapper missingPersonMapper = Mappers.getMapper(MissingPersonMapper.class);
 
-    public MissingPerson findById(UUID id) {
-        return missingPersonRepository.findById(id).orElseThrow(
+    public MissingPersonDto findById(UUID id) {
+        return missingPersonMapper.toDto(missingPersonRepository.findById(id).orElseThrow(
                 () -> new DocumentNotFoundException(MissingPerson.class, id)
-        );
+        ));
     }
 
-    public List<MissingPerson> findByTypeAndActive(MissingPersonType type, Boolean active) {
-        return missingPersonRepository.findByTypeAndActive(type, active);
+    public List<MissingPersonDto> findByTypeAndActive(MissingPersonType type, Boolean active) {
+        return missingPersonMapper.toDto(missingPersonRepository.findByTypeAndActive(type, active));
     }
 
     @Transactional
-    public MissingPerson save(MissingPerson missingPerson) {
-        return missingPersonRepository.save(generateMissingPerson(missingPerson));
+    public MissingPersonDto save(MissingPersonDto missingPerson) {
+        return missingPersonMapper.toDto(missingPersonRepository.save(generateMissingPerson(missingPerson)));
     }
 
     @Transactional
@@ -39,24 +43,24 @@ public class MissingPersonService {
     }
 
     @Transactional
-    public MissingPerson updateDescription(MissingPerson source) {
-        MissingPerson missingPerson = findById(source.getId());
+    public MissingPersonDto updateDescription(MissingPersonDto source) {
+        MissingPersonDto missingPerson = findById(source.getId());
         missingPerson.setDescription(source.getDescription());
-        return missingPersonRepository.save(missingPerson);
+        return missingPersonMapper.toDto(missingPersonRepository.save(missingPersonMapper.toDocument(missingPerson)));
     }
 
     @Transactional
-    public MissingPerson updateStatus(MissingPerson source) {
-        MissingPerson missingPerson = findById(source.getId());
+    public MissingPersonDto updateStatus(MissingPersonDto source) {
+        MissingPersonDto missingPerson = findById(source.getId());
         missingPerson.setStatus(source.getStatus());
-        return missingPersonRepository.save(missingPerson);
+        return missingPersonMapper.toDto(missingPersonRepository.save(missingPersonMapper.toDocument(missingPerson)));
     }
 
     @Transactional
-    public MissingPerson updateActive(UUID id, boolean active) {
-        MissingPerson missingPerson = findById(id);
+    public MissingPersonDto updateActive(UUID id, boolean active) {
+        MissingPersonDto missingPerson = findById(id);
         missingPerson.setActive(active);
-        return missingPersonRepository.save(missingPerson);
+        return missingPersonMapper.toDto(missingPersonRepository.save(missingPersonMapper.toDocument(missingPerson)));
     }
 
     public boolean existsById(UUID id) {
@@ -67,7 +71,7 @@ public class MissingPersonService {
         return missingPersonRepository.findByIdAndType(id, type).isPresent();
     }
 
-    private MissingPerson generateMissingPerson(MissingPerson missingPerson) {
+    private MissingPerson generateMissingPerson(MissingPersonDto missingPerson) {
         return MissingPerson.builder()
                 .description(missingPerson.getDescription())
                 .type(missingPerson.getType())
@@ -75,7 +79,7 @@ public class MissingPersonService {
                 .build();
     }
 
-    private MissingPersonStatus generateMissingPersonStatus(MissingPerson missingPerson) {
+    private MissingPersonStatus generateMissingPersonStatus(MissingPersonDto missingPerson) {
         return MissingPersonStatus.builder()
                 .lostAt(missingPerson.getStatus().getLostAt())
                 .status(SearchStatus.LOST)

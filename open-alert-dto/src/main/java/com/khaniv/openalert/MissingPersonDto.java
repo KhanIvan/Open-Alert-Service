@@ -1,4 +1,4 @@
-package com.khaniv.openalert.documents;
+package com.khaniv.openalert;
 
 import com.khaniv.openalert.data.MissingPersonDescription;
 import com.khaniv.openalert.data.MissingPersonStatus;
@@ -8,19 +8,14 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Document
-@SuperBuilder
 @NoArgsConstructor
-public class MissingPerson extends BaseDocument {
-    @Indexed
+@SuperBuilder
+public class MissingPersonDto extends BaseDto {
     @NonNull
     private MissingPersonType type;
-
     @NonNull
     private MissingPersonStatus status;
     @NonNull

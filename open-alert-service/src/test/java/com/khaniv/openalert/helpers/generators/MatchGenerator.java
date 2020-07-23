@@ -1,8 +1,8 @@
 package com.khaniv.openalert.helpers.generators;
 
 import com.khaniv.openalert.documents.Match;
-import com.khaniv.openalert.documents.enums.OperatorMatchStatus;
-import com.khaniv.openalert.documents.enums.UserMatchStatus;
+import com.khaniv.openalert.enums.OperatorMatchStatus;
+import com.khaniv.openalert.enums.UserMatchStatus;
 import lombok.experimental.UtilityClass;
 
 import java.util.UUID;

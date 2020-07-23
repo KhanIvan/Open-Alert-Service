@@ -1,16 +1,19 @@
 package com.khaniv.openalert.tests.unit;
 
+import com.khaniv.openalert.MissingPersonDto;
 import com.khaniv.openalert.documents.MissingPerson;
-import com.khaniv.openalert.documents.enums.MissingPersonType;
-import com.khaniv.openalert.documents.enums.SearchStatus;
+import com.khaniv.openalert.enums.MissingPersonType;
+import com.khaniv.openalert.enums.SearchStatus;
 import com.khaniv.openalert.errors.exceptions.DocumentNotFoundException;
 import com.khaniv.openalert.helpers.generators.MissingPersonGenerator;
+import com.khaniv.openalert.mappers.MissingPersonMapper;
 import com.khaniv.openalert.repositories.MissingPersonRepository;
 import com.khaniv.openalert.services.MissingPersonService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -33,6 +36,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class MissingPersonServiceTest {
     private MissingPersonService missingPersonService;
+    private final MissingPersonMapper missingPersonMapper = Mappers.getMapper(MissingPersonMapper.class);
 
     @Mock
     private MissingPersonRepository missingPersonRepository;
@@ -46,18 +50,18 @@ public class MissingPersonServiceTest {
     @Test
     public void testFindById() {
         when(missingPersonRepository.findById(Mockito.any(UUID.class)))
-                .thenReturn(Optional.of(new MissingPerson()));
+                .thenReturn(Optional.of(MissingPersonGenerator.generateMissingPerson()));
 
-        MissingPerson missingPerson = missingPersonService.findById(UUID.randomUUID());
+        MissingPersonDto missingPerson = missingPersonService.findById(UUID.randomUUID());
         Assert.assertNotNull(missingPerson);
     }
 
     @Test
     public void testFindByTypeAndActive() {
         when(missingPersonRepository.findByTypeAndActive(Mockito.any(MissingPersonType.class),
-                Mockito.anyBoolean())).thenReturn(Collections.singletonList(new MissingPerson()));
+                Mockito.anyBoolean())).thenReturn(Collections.singletonList(MissingPersonGenerator.generateMissingPerson()));
 
-        List<MissingPerson> missingPeople = missingPersonService.findByTypeAndActive(MissingPersonType.SEEN, true);
+        List<MissingPersonDto> missingPeople = missingPersonService.findByTypeAndActive(MissingPersonType.SEEN, true);
         Assert.assertNotNull(missingPeople);
         Assert.assertEquals(1, missingPeople.size());
     }
@@ -67,8 +71,8 @@ public class MissingPersonServiceTest {
         when(missingPersonRepository.save(Mockito.any(MissingPerson.class)))
                 .thenAnswer(AdditionalAnswers.returnsFirstArg());
 
-        MissingPerson missingPerson = MissingPersonGenerator.generateNewMissingPerson();
-        MissingPerson savedPerson = missingPersonService.save(missingPerson);
+        MissingPersonDto missingPerson = missingPersonMapper.toDto(MissingPersonGenerator.generateNewMissingPerson());
+        MissingPersonDto savedPerson = missingPersonService.save(missingPerson);
         assertMissingPerson(savedPerson);
         Assert.assertEquals(missingPerson.getType(), savedPerson.getType());
         Assert.assertEquals(missingPerson.getDescription(), savedPerson.getDescription());
@@ -79,8 +83,8 @@ public class MissingPersonServiceTest {
     @Test
     public void testUpdateDescription() {
         mockUpdateMethods();
-        MissingPerson missingPerson = MissingPersonGenerator.generateUpdatedMissingPerson();
-        MissingPerson modifiedMissingPerson = missingPersonService.updateDescription(missingPerson);
+        MissingPersonDto missingPerson = missingPersonMapper.toDto(MissingPersonGenerator.generateUpdatedMissingPerson());
+        MissingPersonDto modifiedMissingPerson = missingPersonService.updateDescription(missingPerson);
         assertMissingPerson(modifiedMissingPerson);
         Assert.assertEquals(missingPerson.getDescription(), modifiedMissingPerson.getDescription());
         Assert.assertNotEquals(missingPerson.getStatus(), modifiedMissingPerson.getStatus());
@@ -90,8 +94,8 @@ public class MissingPersonServiceTest {
     @Test
     public void testUpdateStatus() {
         mockUpdateMethods();
-        MissingPerson missingPerson = MissingPersonGenerator.generateUpdatedMissingPerson();
-        MissingPerson modifiedMissingPerson = missingPersonService.updateStatus(missingPerson);
+        MissingPersonDto missingPerson = missingPersonMapper.toDto(MissingPersonGenerator.generateUpdatedMissingPerson());
+        MissingPersonDto modifiedMissingPerson = missingPersonService.updateStatus(missingPerson);
         assertMissingPerson(modifiedMissingPerson);
         Assert.assertNotEquals(missingPerson.getDescription(), modifiedMissingPerson.getDescription());
         Assert.assertEquals(missingPerson.getStatus(), modifiedMissingPerson.getStatus());
@@ -101,7 +105,7 @@ public class MissingPersonServiceTest {
     @Test
     public void testUpdateActive() {
         mockUpdateMethods();
-        MissingPerson missingPerson = missingPersonService.updateActive(UUID.randomUUID(), false);
+        MissingPersonDto missingPerson = missingPersonService.updateActive(UUID.randomUUID(), false);
         assertMissingPerson(missingPerson);
         Assert.assertFalse(missingPerson.getActive());
     }
@@ -137,7 +141,7 @@ public class MissingPersonServiceTest {
                 .thenAnswer(AdditionalAnswers.returnsFirstArg());
     }
 
-    private void assertMissingPerson(MissingPerson missingPerson) {
+    private void assertMissingPerson(MissingPersonDto missingPerson) {
         Assert.assertNotNull(missingPerson);
         Assert.assertNotNull(missingPerson.getDescription());
         Assert.assertNotNull(missingPerson.getStatus());

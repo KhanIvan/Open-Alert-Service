@@ -1,7 +1,7 @@
 package com.khaniv.openalert.controllers;
 
-import com.khaniv.openalert.documents.MissingPerson;
-import com.khaniv.openalert.documents.enums.MissingPersonType;
+import com.khaniv.openalert.MissingPersonDto;
+import com.khaniv.openalert.enums.MissingPersonType;
 import com.khaniv.openalert.services.MissingPersonService;
 import com.sun.istack.internal.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -21,42 +21,42 @@ public class MissingPersonController {
 
     @GetMapping("/lost")
     @ResponseBody
-    public List<MissingPerson> findLostPersons() {
+    public List<MissingPersonDto> findLostPersons() {
         log.info("Find all lost persons");
         return missingPersonService.findByTypeAndActive(MissingPersonType.LOST, true);
     }
 
     @GetMapping("/seen")
     @ResponseBody
-    public List<MissingPerson> findSeenPersons() {
+    public List<MissingPersonDto> findSeenPersons() {
         log.info("Find all seen person");
         return missingPersonService.findByTypeAndActive(MissingPersonType.SEEN, true);
     }
 
     @GetMapping("/{id}")
     @ResponseBody
-    public MissingPerson findMissingPerson(@PathVariable(value = "id") UUID id) {
+    public MissingPersonDto findMissingPerson(@PathVariable(value = "id") UUID id) {
         log.info("Find lost person by ID: {}", id);
         return missingPersonService.findById(id);
     }
 
     @PostMapping
     @ResponseBody
-    public MissingPerson save(@RequestBody @NotNull MissingPerson missingPerson) {
+    public MissingPersonDto save(@RequestBody @NotNull MissingPersonDto missingPerson) {
         log.info("Save missing person");
         return missingPersonService.save(missingPerson);
     }
 
     @PutMapping("/description")
     @ResponseBody
-    public MissingPerson updateDescription(@RequestBody @NotNull MissingPerson source) {
+    public MissingPersonDto updateDescription(@RequestBody @NotNull MissingPersonDto source) {
         log.info("Update description of a missing person by ID {}", source.getId());
         return missingPersonService.updateDescription(source);
     }
 
     @PutMapping("/status")
     @ResponseBody
-    public MissingPerson updateStatus(@RequestBody @NotNull MissingPerson source) {
+    public MissingPersonDto updateStatus(@RequestBody @NotNull MissingPersonDto source) {
         log.info("Update status of a missing person by ID: {}", source.getId());
         return missingPersonService.updateStatus(source);
     }
@@ -70,14 +70,14 @@ public class MissingPersonController {
 
     @PutMapping("/inactivate/{id}")
     @ResponseBody
-    public MissingPerson inactivate(@PathVariable(value = "id") UUID id) {
+    public MissingPersonDto inactivate(@PathVariable(value = "id") UUID id) {
         log.info("Inactivate a missing person by ID: {}", id);
         return missingPersonService.updateActive(id, false);
     }
 
     @PutMapping("/activate/{id}")
     @ResponseBody
-    public MissingPerson activate(@PathVariable(value = "id") UUID id) {
+    public MissingPersonDto activate(@PathVariable(value = "id") UUID id) {
         log.info("Activate a missing person by ID: {}", id);
         return missingPersonService.updateActive(id, true);
     }
