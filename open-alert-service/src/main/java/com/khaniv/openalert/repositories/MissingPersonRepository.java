@@ -1,7 +1,7 @@
 package com.khaniv.openalert.repositories;
 
 import com.khaniv.openalert.documents.MissingPerson;
-import com.khaniv.openalert.enums.MissingPersonType;
+import com.khaniv.openalert.dto.enums.MissingPersonType;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;

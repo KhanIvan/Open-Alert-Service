@@ -11,7 +11,7 @@
     </parent>
 
 
-    <artifactId>open-alert-dto</artifactId>
+    <artifactId>open-alert-common</artifactId>
     <groupId>com.khaniv</groupId>
     <version>0.0.1-SNAPSHOT</version>
 

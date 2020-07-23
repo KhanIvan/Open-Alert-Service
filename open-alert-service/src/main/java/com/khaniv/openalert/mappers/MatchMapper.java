@@ -1,6 +1,6 @@
 package com.khaniv.openalert.mappers;
 
-import com.khaniv.openalert.MatchDto;
+import com.khaniv.openalert.dto.MatchDto;
 import com.khaniv.openalert.documents.Match;
 import org.mapstruct.Mapper;
 

@@ -1,8 +1,8 @@
-package com.khaniv.openalert;
+package com.khaniv.openalert.dto;
 
-import com.khaniv.openalert.data.MissingPersonDescription;
-import com.khaniv.openalert.data.MissingPersonStatus;
-import com.khaniv.openalert.enums.MissingPersonType;
+import com.khaniv.openalert.dto.data.MissingPersonDescription;
+import com.khaniv.openalert.dto.data.MissingPersonStatus;
+import com.khaniv.openalert.dto.enums.MissingPersonType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

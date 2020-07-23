@@ -1,4 +1,4 @@
-package com.khaniv.openalert;
+package com.khaniv.openalert.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

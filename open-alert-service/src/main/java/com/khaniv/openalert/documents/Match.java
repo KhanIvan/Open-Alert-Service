@@ -1,7 +1,7 @@
 package com.khaniv.openalert.documents;
 
-import com.khaniv.openalert.enums.OperatorMatchStatus;
-import com.khaniv.openalert.enums.UserMatchStatus;
+import com.khaniv.openalert.dto.enums.OperatorMatchStatus;
+import com.khaniv.openalert.dto.enums.UserMatchStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

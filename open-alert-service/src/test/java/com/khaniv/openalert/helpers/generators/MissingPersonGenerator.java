@@ -1,11 +1,11 @@
 package com.khaniv.openalert.helpers.generators;
 
-import com.khaniv.openalert.data.MissingPersonDescription;
-import com.khaniv.openalert.data.MissingPersonStatus;
+import com.khaniv.openalert.dto.data.MissingPersonDescription;
+import com.khaniv.openalert.dto.data.MissingPersonStatus;
 import com.khaniv.openalert.documents.MissingPerson;
-import com.khaniv.openalert.enums.MissingPersonType;
-import com.khaniv.openalert.enums.PersonSex;
-import com.khaniv.openalert.enums.SearchStatus;
+import com.khaniv.openalert.dto.enums.MissingPersonType;
+import com.khaniv.openalert.dto.enums.PersonSex;
+import com.khaniv.openalert.dto.enums.SearchStatus;
 import lombok.experimental.UtilityClass;
 
 import java.time.LocalDateTime;

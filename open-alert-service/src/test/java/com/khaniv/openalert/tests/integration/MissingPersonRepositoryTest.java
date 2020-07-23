@@ -2,7 +2,7 @@ package com.khaniv.openalert.tests.integration;
 
 import com.khaniv.openalert.configurations.MongoConfiguration;
 import com.khaniv.openalert.documents.MissingPerson;
-import com.khaniv.openalert.enums.MissingPersonType;
+import com.khaniv.openalert.dto.enums.MissingPersonType;
 import com.khaniv.openalert.helpers.generators.MissingPersonGenerator;
 import com.khaniv.openalert.helpers.utils.AssertionUtils;
 import com.khaniv.openalert.listeners.BaseDocumentEventListener;

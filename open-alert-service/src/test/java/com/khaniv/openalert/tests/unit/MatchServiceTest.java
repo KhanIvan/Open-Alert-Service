@@ -1,11 +1,11 @@
 package com.khaniv.openalert.tests.unit;
 
-import com.khaniv.openalert.MatchDto;
+import com.khaniv.openalert.dto.MatchDto;
 import com.khaniv.openalert.checkers.CheckingUtils;
 import com.khaniv.openalert.documents.Match;
-import com.khaniv.openalert.enums.MissingPersonType;
-import com.khaniv.openalert.enums.OperatorMatchStatus;
-import com.khaniv.openalert.enums.UserMatchStatus;
+import com.khaniv.openalert.dto.enums.MissingPersonType;
+import com.khaniv.openalert.dto.enums.OperatorMatchStatus;
+import com.khaniv.openalert.dto.enums.UserMatchStatus;
 import com.khaniv.openalert.errors.exceptions.DocumentDuplicatesException;
 import com.khaniv.openalert.errors.exceptions.DocumentNotFoundException;
 import com.khaniv.openalert.errors.exceptions.MatchAlreadyExistsException;

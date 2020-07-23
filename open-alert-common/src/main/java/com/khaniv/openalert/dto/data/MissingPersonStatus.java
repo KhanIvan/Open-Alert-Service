@@ -1,6 +1,6 @@
-package com.khaniv.openalert.data;
+package com.khaniv.openalert.dto.data;
 
-import com.khaniv.openalert.enums.SearchStatus;
+import com.khaniv.openalert.dto.enums.SearchStatus;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;

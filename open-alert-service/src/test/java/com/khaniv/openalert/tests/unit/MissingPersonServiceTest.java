@@ -1,9 +1,9 @@
 package com.khaniv.openalert.tests.unit;
 
-import com.khaniv.openalert.MissingPersonDto;
+import com.khaniv.openalert.dto.MissingPersonDto;
 import com.khaniv.openalert.documents.MissingPerson;
-import com.khaniv.openalert.enums.MissingPersonType;
-import com.khaniv.openalert.enums.SearchStatus;
+import com.khaniv.openalert.dto.enums.MissingPersonType;
+import com.khaniv.openalert.dto.enums.SearchStatus;
 import com.khaniv.openalert.errors.exceptions.DocumentNotFoundException;
 import com.khaniv.openalert.helpers.generators.MissingPersonGenerator;
 import com.khaniv.openalert.mappers.MissingPersonMapper;

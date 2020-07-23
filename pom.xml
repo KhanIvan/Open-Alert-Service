@@ -15,7 +15,8 @@
 
 	<modules>
 		<module>open-alert-service</module>
-        <module>open-alert-dto</module>
+        <module>open-alert-common</module>
+        <module>open-alert-api</module>
     </modules>
 
 	<properties>

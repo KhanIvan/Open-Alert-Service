@@ -1,6 +1,6 @@
 package com.khaniv.openalert.mappers;
 
-import com.khaniv.openalert.MissingPersonDto;
+import com.khaniv.openalert.dto.MissingPersonDto;
 import com.khaniv.openalert.documents.MissingPerson;
 import org.mapstruct.Mapper;
 
