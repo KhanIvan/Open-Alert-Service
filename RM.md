@@ -1,4 +1,4 @@
-#Open Alert
+# Open Alert
 
 The purpose of this project is creating simple user-friendly service for searching lost or missing people.
 
@@ -30,17 +30,17 @@ networks or messengers may not be quick and convenient enough. In Open Alert we 
 The operator will simply fill in several locations where the missingPerson could go to, and the next moment people in these
 locations will receive a notification and will be on alert!
 
-#Technologies used
+# Technologies used
 
-For now Open Alert is just a bunch of Spring Cloud services. The data source used is MongoDB.
+For now Open Alert is just a bunch of Spring Cloud services. The data sources used are MongoDB.
 In future we are planning to make C++ OpenCV app to work with photos. Maybe there will be 
 some web-UI written on vue.js and mobile apps.
 
-#Credentials
+# Credentials
 
 This project is created and supported by Ivan Khan.
 
-#License
+# License
 
 Open Alert is absolutely free. It is spread as a public domain software. You can use the
 code base or software itself in any way you like to help missing people find their homes.

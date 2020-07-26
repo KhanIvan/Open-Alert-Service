@@ -45,6 +45,7 @@
             <artifactId>spring-cloud-starter-feign</artifactId>
             <version>1.4.7.RELEASE</version>
         </dependency>
+
         <dependency>
             <groupId>com.khaniv</groupId>
             <artifactId>open-alert-common</artifactId>
