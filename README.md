@@ -8,4 +8,4 @@ This service is the main data-source manager of [Open Alert project](https://git
 * MongoDB
 
 # Credentials & License
-Look [main project](https://github.com/users/KhanIvan/projects/1) desciprtion.
+Look [main project](https://github.com/users/KhanIvan/projects/1) description.
